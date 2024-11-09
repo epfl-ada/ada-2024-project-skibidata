@@ -49,5 +49,6 @@ There is mostly two ways to create a movie recommandation system: Content-based 
 - Arthur:
 - Alex:
 - Corentin:
+## Organization of the Github
 ## Questions for TAs (optional)
 Add here any questions you have for us related to the proposed project.
