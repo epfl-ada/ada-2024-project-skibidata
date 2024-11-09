@@ -28,10 +28,10 @@ List the additional dataset(s) you want to use (if any), and some ideas on how y
 - __Task 2: Clustering movies by similarities__
 - __Task 3: Clustering viewers by similarities__
 ## Proposed timeline
-- [x] 15 Nov. : Milestone P2
+- [x] 15 Nov. 2024 : Milestone P2
 - [ ] TO DO
 - [ ] TO DO 
-- [ ] 22 Dec. : Milestone P3
+- [ ] 20 Dec. 2024 : Milestone P3
 ## Organization within the team
 - Vincent:
 - Mayeul:
