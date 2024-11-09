@@ -32,11 +32,7 @@ There is mostly two ways to create a movie recommandation system: Content-based 
 
 - Collaborative filtering:
 
-  > Collaborative filtering is a recommendation strategy that considers the user’s behavior and compares it with other users in the database. It uses the history of all users to influence the recommendation algorithm. Unlike a content-based recommender system, a collaborative filtering recommender relies on multiple users’ interactions with items to generate suggestions. It doesn’t solely depend on one user’s data for modeling. There are various approaches to implementing collaborative filtering, but the fundamental concept is the collective influence of multiple users on the recommendation outcome. There are 2 types of collaborative filtering algorithms:
-   - User-based Collaborative filtering:
-   User-based collaborative filtering aims to recommend items to a user (A) based on the preferences of similar users in the database. It involves creating a matrix of items      rated/liked/clicked by each user, computing similarity scores between users, and then suggesting items that user A hasn’t encountered yet but similar users have liked.
-
-For example, if user A likes particular movies like Batman Begins, Justice League, and The Avengers and user B like Thor, they share similar interests in the superhero genre. Therefore, it is highly likely that user A would enjoy a popular movie like Thor and user B would like The Avengers, one with the highest movie ratings.
+  > Collaborative filtering is a recommendation strategy that considers the user’s behavior and compares it with other users in the database. It uses the history of all users to influence the recommendation algorithm. Unlike a content-based recommender system, a collaborative filtering recommender relies on multiple users’ interactions with items to generate suggestions. It doesn’t solely depend on one user’s data for modeling. There are various approaches to implementing collaborative filtering, but the fundamental concept is the collective influence of multiple users on the recommendation outcome. There are 2 types of collaborative filtering algorithms....
 
 
 - __Task 1: Cleaning the Data__
