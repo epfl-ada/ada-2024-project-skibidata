@@ -1,0 +1,6 @@
+.venv
+*.csv
+**/*.csv
+*.tsv
+**/*.tsv
+lib/*

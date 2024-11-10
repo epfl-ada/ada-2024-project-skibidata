@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 750px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "white"}, "id": "Liam Neeson", "label": "Liam Neeson", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Samuel L. Jackson", "label": "Samuel L. Jackson", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Warwick Davis", "label": "Warwick Davis", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Christian Bale", "label": "Christian Bale", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Anne Hathaway", "label": "Anne Hathaway", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Gary Oldman", "label": "Gary Oldman", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Morgan Freeman", "label": "Morgan Freeman", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Michael Caine", "label": "Michael Caine", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Nestor Carbonell", "label": "Nestor Carbonell", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Patrick Leahy", "label": "Patrick Leahy", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Robert Downey Jr.", "label": "Robert Downey Jr.", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Chris Evans", "label": "Chris Evans", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Mark Ruffalo", "label": "Mark Ruffalo", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Scarlett Johansson", "label": "Scarlett Johansson", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Helena Bonham Carter", "label": "Helena Bonham Carter", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Alan Rickman", "label": "Alan Rickman", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Timothy Spall", "label": "Timothy Spall", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "John Rhys-Davies", "label": "John Rhys-Davies", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Bernard Hill", "label": "Bernard Hill", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Hugo Weaving", "label": "Hugo Weaving", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Christopher Lee", "label": "Christopher Lee", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Lawrence Makoare", "label": "Lawrence Makoare", "shape": "dot", "size": 10}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Johnny Depp", "label": "Johnny Depp", "shape": "dot", "size": 10}]);
+                  edges = new vis.DataSet([{"from": "Liam Neeson", "to": "Samuel L. Jackson", "width": 1}, {"from": "Liam Neeson", "to": "Warwick Davis", "width": 1}, {"from": "Liam Neeson", "to": "Christian Bale", "width": 1}, {"from": "Liam Neeson", "to": "Anne Hathaway", "width": 1}, {"from": "Liam Neeson", "to": "Gary Oldman", "width": 1}, {"from": "Liam Neeson", "to": "Morgan Freeman", "width": 1}, {"from": "Liam Neeson", "to": "Michael Caine", "width": 1}, {"from": "Liam Neeson", "to": "Nestor Carbonell", "width": 1}, {"from": "Liam Neeson", "to": "Patrick Leahy", "width": 1}, {"from": "Samuel L. Jackson", "to": "Warwick Davis", "width": 1}, {"from": "Samuel L. Jackson", "to": "Robert Downey Jr.", "width": 1}, {"from": "Samuel L. Jackson", "to": "Chris Evans", "width": 1}, {"from": "Samuel L. Jackson", "to": "Mark Ruffalo", "width": 1}, {"from": "Samuel L. Jackson", "to": "Scarlett Johansson", "width": 1}, {"from": "Warwick Davis", "to": "Helena Bonham Carter", "width": 1}, {"from": "Warwick Davis", "to": "Gary Oldman", "width": 1}, {"from": "Warwick Davis", "to": "Alan Rickman", "width": 1}, {"from": "Warwick Davis", "to": "Timothy Spall", "width": 1}, {"from": "John Rhys-Davies", "to": "Bernard Hill", "width": 1}, {"from": "John Rhys-Davies", "to": "Hugo Weaving", "width": 1}, {"from": "John Rhys-Davies", "to": "Christopher Lee", "width": 1}, {"from": "John Rhys-Davies", "to": "Lawrence Makoare", "width": 1}, {"from": "Bernard Hill", "to": "Hugo Weaving", "width": 1}, {"from": "Bernard Hill", "to": "Christopher Lee", "width": 1}, {"from": "Bernard Hill", "to": "Lawrence Makoare", "width": 1}, {"from": "Hugo Weaving", "to": "Christopher Lee", "width": 1}, {"from": "Hugo Weaving", "to": "Lawrence Makoare", "width": 1}, {"from": "Christopher Lee", "to": "Lawrence Makoare", "width": 1}, {"from": "Christopher Lee", "to": "Anne Hathaway", "width": 1}, {"from": "Christopher Lee", "to": "Johnny Depp", "width": 1}, {"from": "Christopher Lee", "to": "Helena Bonham Carter", "width": 1}, {"from": "Christopher Lee", "to": "Alan Rickman", "width": 1}, {"from": "Christopher Lee", "to": "Timothy Spall", "width": 1}, {"from": "Christian Bale", "to": "Michael Caine", "width": 1}, {"from": "Christian Bale", "to": "Gary Oldman", "width": 1}, {"from": "Christian Bale", "to": "Morgan Freeman", "width": 1}, {"from": "Christian Bale", "to": "Nestor Carbonell", "width": 1}, {"from": "Christian Bale", "to": "Patrick Leahy", "width": 1}, {"from": "Christian Bale", "to": "Anne Hathaway", "width": 1}, {"from": "Michael Caine", "to": "Gary Oldman", "width": 1}, {"from": "Michael Caine", "to": "Morgan Freeman", "width": 1}, {"from": "Michael Caine", "to": "Nestor Carbonell", "width": 1}, {"from": "Michael Caine", "to": "Patrick Leahy", "width": 1}, {"from": "Michael Caine", "to": "Anne Hathaway", "width": 1}, {"from": "Gary Oldman", "to": "Morgan Freeman", "width": 1}, {"from": "Gary Oldman", "to": "Nestor Carbonell", "width": 1}, {"from": "Gary Oldman", "to": "Patrick Leahy", "width": 1}, {"from": "Gary Oldman", "to": "Anne Hathaway", "width": 1}, {"from": "Gary Oldman", "to": "Helena Bonham Carter", "width": 1}, {"from": "Gary Oldman", "to": "Alan Rickman", "width": 1}, {"from": "Gary Oldman", "to": "Timothy Spall", "width": 1}, {"from": "Morgan Freeman", "to": "Nestor Carbonell", "width": 1}, {"from": "Morgan Freeman", "to": "Patrick Leahy", "width": 1}, {"from": "Morgan Freeman", "to": "Anne Hathaway", "width": 1}, {"from": "Nestor Carbonell", "to": "Patrick Leahy", "width": 1}, {"from": "Nestor Carbonell", "to": "Anne Hathaway", "width": 1}, {"from": "Patrick Leahy", "to": "Anne Hathaway", "width": 1}, {"from": "Anne Hathaway", "to": "Johnny Depp", "width": 1}, {"from": "Anne Hathaway", "to": "Helena Bonham Carter", "width": 1}, {"from": "Anne Hathaway", "to": "Alan Rickman", "width": 1}, {"from": "Anne Hathaway", "to": "Timothy Spall", "width": 1}, {"from": "Johnny Depp", "to": "Helena Bonham Carter", "width": 1}, {"from": "Johnny Depp", "to": "Alan Rickman", "width": 1}, {"from": "Johnny Depp", "to": "Timothy Spall", "width": 1}, {"from": "Helena Bonham Carter", "to": "Alan Rickman", "width": 1}, {"from": "Helena Bonham Carter", "to": "Timothy Spall", "width": 1}, {"from": "Alan Rickman", "to": "Timothy Spall", "width": 1}, {"from": "Robert Downey Jr.", "to": "Chris Evans", "width": 1}, {"from": "Robert Downey Jr.", "to": "Mark Ruffalo", "width": 1}, {"from": "Robert Downey Jr.", "to": "Scarlett Johansson", "width": 1}, {"from": "Chris Evans", "to": "Mark Ruffalo", "width": 1}, {"from": "Chris Evans", "to": "Scarlett Johansson", "width": 1}, {"from": "Mark Ruffalo", "to": "Scarlett Johansson", "width": 1}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
