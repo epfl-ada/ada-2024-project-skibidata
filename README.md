@@ -25,7 +25,7 @@ A list of research questions you would like to address during the project.
   
 List the additional dataset(s) you want to use (if any), and some ideas on how you expect to get, manage, process, and enrich it/them. Show us that you’ve read the docs and some examples, and that you have a clear idea on what to expect. Discuss data size and format if relevant. It is your responsibility to check that what you propose is feasible.
 ## Methods
-There is mostly two ways to create a movie recommandation system: Content-based filtering VS Collaborative filtering. 
+There is mostly three types of recommandation system: 
 - Content-based filtering:
 
   > Content-based filtering is a recommendation strategy that suggests items similar to those a user has previously liked. It calculates similarity (often using cosine similarity) between the user’s preferences and item attributes, such as lead actors, directors, and genres. For example, if a user enjoys ‘The Prestige,’ the system recommends movies with Christian Bale, the ‘Thriller’ genre, or films by Christopher Nolan. However, content-based filtering has drawbacks. It limits exposure to different products, preventing users from exploring a variety of items. This can hinder business expansion as users might not try out new types of products.
@@ -33,6 +33,10 @@ There is mostly two ways to create a movie recommandation system: Content-based 
 - Collaborative filtering:
 
   > Collaborative filtering is a recommendation strategy that considers the user’s behavior and compares it with other users in the database. It uses the history of all users to influence the recommendation algorithm. Unlike a content-based recommender system, a collaborative filtering recommender relies on multiple users’ interactions with items to generate suggestions. It doesn’t solely depend on one user’s data for modeling. There are various approaches to implementing collaborative filtering, but the fundamental concept is the collective influence of multiple users on the recommendation outcome. There are 2 types of collaborative filtering algorithms....
+
+- Demographic filtering:
+
+  > demographic filtering....
 
 
 - __Task 1: Cleaning the Data__
