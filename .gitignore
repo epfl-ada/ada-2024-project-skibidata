@@ -4,3 +4,4 @@
 *.tsv
 **/*.tsv
 lib/*
+!ethnicities_with_skin_color.csv
