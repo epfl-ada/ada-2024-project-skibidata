@@ -1,11 +1,11 @@
-# A Movie Recommandation system 
+# A Movie Recommendation System
 ## Abstract
+Recommendation systems are everywhere ...
 A 150 word description of the project idea and goals. What’s the motivation behind your project? What story would you like to tell, and why?
 ## Research Questions
-1. First Question
-2. Second Question
+1. ...
+2. How to compare the results obtained by different recommandation systems ?
    
-A list of research questions you would like to address during the project.
 ## Additional datasets
 - __Movielens Dataset:__
    - Description:
@@ -39,16 +39,23 @@ There is mostly three types of recommandation system:
   > demographic filtering....
 
 
-- __Task 1: Cleaning the Data__
-- __Task 2: Clustering movies by similarities__
-- __Task 3: Clustering viewers by similarities__
+- __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
+   - __1.1__ Clean CMU dataset
+   - __1.2__ Complete and correct CMU dataset
+   - __1.3__ EDA on the new CMU dataset
+- __Task 2: First Recommendation System: Demographic Filtering__
+   - __2.1__ Implement demographic filtering to obatin first results
+- __Task 3: Improving the Recommendation System: Content-based and Collaborative Filtering__      
+   - __3.1__ Implement content-based filtering      
+   - __3.2__ Implement collaborative filtering 
+- __Task 4: An even better Recommendation Sytem ?: Hybrid Filtering__
 ## Proposed timeline
 - [x] 15 Nov. 2024 : Milestone P2
 - [ ] TO DO
 - [ ] TO DO 
 - [ ] 20 Dec. 2024 : Milestone P3
 ## Organization within the team
-- Vincent:
+- Vincent: 
 - Mayeul:
 - Arthur:
 - Alex:
