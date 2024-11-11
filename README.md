@@ -40,16 +40,19 @@ There is mostly three types of recommandation system:
 
 
 - __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
-   - __1.1__ Clean CMU dataset
-   - __1.2__ Complete and correct CMU dataset
-   - __1.3__ EDA on the new CMU dataset
+   - __1.1__: Clean CMU dataset
+   - __1.2__:Complete and correct CMU dataset
+   - __1.3__: EDA on the new CMU dataset
 - __Task 2: First Recommendation System: Demographic Filtering__
-   - __2.1__ Implement demographic filtering to obatin first results
+   - __2.1__: Cleaing and first data analysis on Movielens dataset
+   - __2.1__: Implement demographic filtering to obatin first results
 - __Task 3: Improving the Recommendation System: Content-based and Collaborative Filtering__      
-   - __3.1__ Implement content-based filtering      
-   - __3.2__ Implement collaborative filtering 
-- __Task 4: An even better Recommendation Sytem ?: Hybrid Filtering__
+   - __3.1__: Implement content-based filtering      
+   - __3.2__: Implement collaborative filtering 
+- __Task 4: An even better Recommendation Sytem ? Hybrid Filtering__
+   - __4.1__: Implement an hybrid recommendation system with both content-based and collaborative filtering
 ## Proposed timeline
+- [x] 
 - [x] 15 Nov. 2024 : Milestone P2
 - [ ] TO DO
 - [ ] TO DO 
