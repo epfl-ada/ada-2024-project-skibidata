@@ -5,9 +5,9 @@ Recommendation systems are everywhere in today's digital world, enhancing user e
 The motivation behind this project comes from the growing demand for intelligent systems that can navigate vast amounts of content, ensuring users find what they love. Additionally, this project showcases the power of data-driven decision-making and machine learning in solving real-world problems, with potential applications in entertainment and beyond.
 
 ## Research Questions
-1. How to optimally cluster movies by similarities for a recommendation system ?
-2. How to optimally cluster users by tastes for a recommendation system ?
-3. How to compare the results obtained by different recommandation systems ?
+1. How to find users preferences ?
+2. How to optimally cluster movies by similarities for recommendation systems ?
+3. How to compare the results obtained by different recommendation systems ?
    
 ## Additional datasets
 - __TMdB and Movielens Dataset:__
@@ -64,11 +64,11 @@ We will implement the two systems. We will compare their recommendation based on
 
 ## Organization within the team
 Actually, the following members are working on:
-- Vincent: collaborative filtering
-- Mayeul: collaborative and content-based filtering
-- Arthur: the final website integrating our different recommendation systems
-- Alex: content-based filtering
-- Corentin: finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
+- _Vincent_ : collaborative filtering
+- _Mayeul_ : collaborative and content-based filtering
+- _Arthur_ : the final website integrating our different recommendation systems
+- _Alex_ : content-based filtering
+- _Corentin_ : finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
   
 ## Organization of the Github
 Our Github is organized as follows:
@@ -77,5 +77,5 @@ Our Github is organized as follows:
 - Draft: folder containing files used to store experimental concepts and test scripts
 - Data: folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
 - README.md
--.gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
+- gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
 
