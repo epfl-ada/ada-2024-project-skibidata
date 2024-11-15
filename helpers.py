@@ -6,7 +6,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from SPARQLWrapper import SPARQLWrapper, JSON
 from mpl_toolkits.axes_grid1 import make_axes_locatable
-
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from sklearn.metrics import mean_squared_error, r2_score
 
 
 def extract_from_dict(string):
@@ -286,10 +291,78 @@ def create_world_map(data, col, world, log=False):
     plt.show()
 
 
+def evaluate_model_for_user(userId, data):
+    """
+    Generates training and test splits for a given user ID, trains a neural network, 
+    and evaluates the model to return MSE and R^2 for both training and test sets.
+    """
+    # Filter and preprocess data for the given user
+    user_rating = data[data['userId'] == userId]
+    user_rating = user_rating.iloc[:, 5:].sample(frac=1)  # Shuffle data
+    user_rating = user_rating.drop(columns=['timestamp'])
+    y = user_rating['rating']
+    x = user_rating.drop(columns=['rating'])
+
+    # Split into training and testing sets
+    length = len(y)
+    x_size = int(length * 0.8)
+    x_train, x_test = x.iloc[:x_size, :], x.iloc[x_size:, :]
+    y_train, y_test = y.iloc[:x_size], y.iloc[x_size:]
+
+    # Define the neural network model
+    model = Sequential([
+        Dense(64, input_dim=x_train.shape[1], activation='relu'),  # First hidden layer
+        Dense(32, activation='relu'),  # Second hidden layer
+        Dense(1, activation='linear')  # Output layer for regression
+    ])
+
+    # Compile the model
+    model.compile(optimizer='adam', loss='mse', metrics=['mse'])
+
+    # Train the model
+    model.fit(x_train, y_train, epochs=100, batch_size=32, validation_split=0.2, verbose=1)
+
+    # Predict on training and test sets
+    y_train_pred = model.predict(x_train)
+    y_test_pred = model.predict(x_test)
+
+    # Calculate evaluation metrics
+    train_mse = mean_squared_error(y_train, y_train_pred)
+    test_mse = mean_squared_error(y_test, y_test_pred)
+    train_r2 = r2_score(y_train, y_train_pred)
+    test_r2 = r2_score(y_test, y_test_pred)
+
+    # Print evaluation results
+    print(f"Evaluation for User ID {userId}:")
+    print("Training Set Evaluation:")
+    print(f"MSE: {train_mse:.4f}, R^2: {train_r2:.4f}")
+    print("\nTest Set Evaluation:")
+    print(f"MSE: {test_mse:.4f}, R^2: {test_r2:.4f}")
+
+    # Return MSE values for both sets
+    return train_mse, test_mse
 
 
 
+def one_hot_encoding_genre(df,movies) :
+    """
+    Creates one hot encoded features per unique genre 
 
+    """
+    #Merges df and movies 
+    
+    rating_films=pd.merge(movies,df,on='movieId',how='inner')
+
+    #Create list of unique_genres
+    unique_genres = movies['genres'].unique()
+    all_genres = set('|'.join(unique_genres).split('|'))
+
+    all_genres_list = list(all_genres)
+    all_genres_list.remove('(no genres listed)')
+    # Create a one hot encoding for each genre
+    for genre in all_genres_list : 
+        rating_films[genre] = rating_films['genres'].apply(lambda x: genre in x.split('|'))
+    return rating_films
 
 
 
