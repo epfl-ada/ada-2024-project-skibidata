@@ -21,10 +21,8 @@ def extract_from_dict(string):
 
 
 def wikipedia_query(save_file=True, save_path='', filename='wiki.csv'):
-    # Call the wikidata query service
     sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
 
-    # Create the query
     sparql.setQuery("""
     SELECT ?work ?imdb_id ?freebase_id 
     WHERE
@@ -37,7 +35,6 @@ def wikipedia_query(save_file=True, save_path='', filename='wiki.csv'):
     }
     """)
 
-    # Set the return format to JSON
     sparql.setReturnFormat(JSON)
 
     try:
@@ -46,7 +43,7 @@ def wikipedia_query(save_file=True, save_path='', filename='wiki.csv'):
         print('Wikipedia query successful')
         bindings = results['results']['bindings']
 
-        # Extracting IMDb, Wikipedia, Freebase IDs, and labels
+        # Extracting IMDb, Freebase IDs
         data = []
         for binding in bindings:
             row = {
@@ -55,10 +52,7 @@ def wikipedia_query(save_file=True, save_path='', filename='wiki.csv'):
             }
             data.append(row)
 
-        # Create a DataFrame after the loop has finished
         wiki_df = pd.DataFrame(data)
-
-        # remove duplicates
         wiki_df_filtered = wiki_df.drop_duplicates('imdb_id', keep='first')
 
         if save_file:
@@ -69,7 +63,6 @@ def wikipedia_query(save_file=True, save_path='', filename='wiki.csv'):
 
     except Exception as e:
         print(f"An error occurred: {e}")
-
 
 
 def show_missing_values(df):
@@ -84,30 +77,18 @@ def show_missing_values(df):
 
 
 def get_director(x):
-    # Ensure 'x' is a list (if it's a string, convert it to a list of dictionaries)
     if isinstance(x, str):
-        x = ast.literal_eval(x)  # Convert string representation of list to actual list
+        x = ast.literal_eval(x)
 
-    # Now iterate over the list if it is a list of dictionaries
     if isinstance(x, list):
         for i in x:
             if isinstance(i, dict) and i.get('job') == 'Director':
                 return i.get('name', np.nan)
     return np.nan
 
+
 def find_similar_rows(df, indices_different_box, columns):
-    """
-    Find the indices of rows in a DataFrame where the values have a maximum 5% difference,
-    and the indices are present in the provided `indices_different_box`.
 
-    Parameters:
-    df (pandas.DataFrame): The input DataFrame
-    indices_different_box (list): The list of indices to consider
-    columns (list): The columns to compare for similarity
-
-    Returns:
-    set: The indices of rows meeting the criteria
-    """
     similar_rows = set()
 
     for idx in indices_different_box:
@@ -260,40 +241,36 @@ def clean_duplicates(df):
 
 
 def create_world_map(data, col, world, log=False):
-    # Plotting
+
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
 
-    # Plot the world boundary (optional)
     world.boundary.plot(ax=ax, linewidth=1, color="gray")
 
-    # Main plot with merged data
     im = data.plot(
         column=col,
         cmap='YlOrRd',
-        legend=False,  # Disable default legend
+        legend=False,
         ax=ax,
         missing_kwds={"color": "lightgrey", "label": "No data"}
     )
 
-    # Add color bar
     divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.1)  # Adjust size and padding
+    cax = divider.append_axes("right", size="5%", pad=0.1)
     sm = plt.cm.ScalarMappable(cmap='YlOrRd',
                                norm=plt.Normalize(vmin=data[col].min(), vmax=data[col].max()))
-    sm._A = []  # Required for compatibility
+    sm._A = []
     cbar = plt.colorbar(sm, cax=cax)
     if log:
         cbar.set_label('Logarithm Number of Movies', fontsize=14)
     else:
         cbar.set_label('Number of Movies', fontsize=14)
 
-    # Customize plot
     plt.show()
 
 
 def evaluate_model_for_user(userId, data):
     """
-    Generates training and test splits for a given user ID, trains a neural network, 
+    Generates training and test splits for a given user ID, trains a neural network,
     and evaluates the model to return MSE and R^2 for both training and test sets.
     """
     # Filter and preprocess data for the given user
@@ -349,18 +326,18 @@ def one_hot_encoding_genre(df,movies) :
     Creates one hot encoded features per unique genre 
 
     """
-    #Merges df and movies 
+    # Merges df and movies
     
-    rating_films=pd.merge(movies,df,on='movieId',how='inner')
+    rating_films=pd.merge(movies, df, on='movieId', how='inner')
 
-    #Create list of unique_genres
+    # Create list of unique_genres
     unique_genres = movies['genres'].unique()
     all_genres = set('|'.join(unique_genres).split('|'))
 
     all_genres_list = list(all_genres)
     all_genres_list.remove('(no genres listed)')
     # Create a one hot encoding for each genre
-    for genre in all_genres_list : 
+    for genre in all_genres_list:
         rating_films[genre] = rating_films['genres'].apply(lambda x: genre in x.split('|'))
     return rating_films
 
