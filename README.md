@@ -77,5 +77,5 @@ Our Github is organized as follows:
 - Draft: folder containing files used to store experimental concepts and test scripts
 - Data: folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
 - README.md
--.gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
+- gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
 
