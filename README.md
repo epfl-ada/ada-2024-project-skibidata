@@ -76,10 +76,10 @@ Actually, the following members are working on:
   
 ## Organization of the Github
 Our Github is organized as follows:
-- results.ipynb: notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
+- `results.ipynb` notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
   
-- Draft: folder containing files used to store experimental concepts and test scripts
-- Data: folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
-- README.md
-- gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
+- `Draft` folder containing files used to store experimental concepts and test scripts
+- `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
+- `README.md`
+- `gitignore` : Configuration file used to specify files and directories that should be ignored by Git. 
 
