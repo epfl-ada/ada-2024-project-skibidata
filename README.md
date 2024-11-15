@@ -58,10 +58,10 @@ There is mostly three types of recommandation system:
 - [ ] TO DO 
 - [ ] 20 Dec. 2024 : Milestone P3
 ## Organization within the team
-- Vincent: 
+- Vincent: Free loader
 - Mayeul:
-- Arthur:
-- Alex:
+- Arthur: Follower
+- Alex: Team leader
 - Corentin:
 ## Organization of the Github
 ## Questions for TAs (optional)
