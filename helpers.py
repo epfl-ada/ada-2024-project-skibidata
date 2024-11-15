@@ -278,7 +278,7 @@ def evaluate_model_for_user(userId, data):
     user_rating = user_rating.iloc[:, 5:].sample(frac=1)  # Shuffle data
     user_rating = user_rating.drop(columns=['timestamp'])
     y = user_rating['rating']
-    x = user_rating.drop(columns=['rating'])
+    x = user_rating.iloc[:, 1:]
 
     # Split into training and testing sets
     length = len(y)
