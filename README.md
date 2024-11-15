@@ -6,12 +6,12 @@ The motivation behind this project comes from the growing demand for intelligent
 
 ## Research Questions
 1. How effectively can collaborative filtering and content-based filtering predict user preferences in movie recommendations ?
-   1.1 What are the most important features when trying to cluster movies by similarities ?
-   1.2 Similarly, how to find users with the same preferences ?
-   1.3 How to compare the results obtained by different recommendation systems ?
-   1.4 What are the key differences in performance between user-based and item-based collaborative filtering approaches ?
+   - 1.1 What are the most important features when trying to cluster movies by similarities ?
+   - 1.2 Similarly, how to find users with the same preferences ?
+   - 1.3 How to compare the results obtained by different recommendation systems ?
+   - 1.4 What are the key differences in performance between user-based and item-based collaborative filtering approaches ?
 2. Can an hybrid recommendation system outperfom collaborative filtering and/or content-based filtering approaches ?
-   2.1 What weighting or blending strategies work best for hybrid systems ?  
+   - 2.1 What weighting or blending strategies work best for hybrid systems ?  
    
 ## Additional datasets
 - __TMdB and Movielens Dataset:__
