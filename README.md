@@ -64,5 +64,9 @@ There is mostly three types of recommandation system:
 - Alex: Team leader
 - Corentin:
 ## Organization of the Github
+- results.ipynb : notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
+- Draft : folder containing files used to store experimental concepts and test scripts
+- README.md : 
+-.gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
 ## Questions for TAs (optional)
 Add here any questions you have for us related to the proposed project.
