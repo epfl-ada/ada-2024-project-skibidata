@@ -65,7 +65,7 @@ We will implement the two systems. We will compare their recommendation based on
 ## Organization within the team
 Actually, the following members are working on:
 - Vincent: collaborative filtering
-- Mayeul: collaborative filtering
+- Mayeul: collaborative and content-based filtering
 - Arthur: the final website integrating our different recommendation systems
 - Alex: content-based filtering
 - Corentin: finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
