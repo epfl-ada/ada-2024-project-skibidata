@@ -81,5 +81,4 @@ Our Github is organized as follows:
 - `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook. 
 - `README.md`
 - `gitignore` configuration file used to specify files and directories that should be ignored by Git.
-In order to run the current `results.ipynb` notebook you also need to download 
 
