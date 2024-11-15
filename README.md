@@ -10,7 +10,7 @@ The motivation behind this project comes from the growing demand for intelligent
 3. How to compare the results obtained by different recommandation systems ?
    
 ## Additional datasets
-- __TMdN and Movielens Dataset:__
+- __TMdB and Movielens Dataset:__
   
    - _Description_:
      
