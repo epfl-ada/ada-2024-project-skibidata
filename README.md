@@ -5,8 +5,8 @@ Recommendation systems are everywhere in today's digital world, enhancing user e
 The motivation behind this project comes from the growing demand for intelligent systems that can navigate vast amounts of content, ensuring users find what they love. Additionally, this project showcases the power of data-driven decision-making and machine learning in solving real-world problems, with potential applications in entertainment and beyond.
 
 ## Research Questions
-1. How to optimally cluster movies by similarities for recommendation systems ?
-2. How to optimally cluster users by tastes for recommendation systems ?
+1. How to find users preferences ?
+2. How to optimally cluster movies by similarities for recommendation systems ?
 3. How to compare the results obtained by different recommendation systems ?
    
 ## Additional datasets
