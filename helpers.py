@@ -117,19 +117,22 @@ def clean_duplicates(df):
     indices_all_nans_date = df.index[df[['release_date_cmu', 'release_date_tmdb']].isna().all(axis=1)]
     indices_all_nans_time = df.index[df[['runtime_cmu', 'runtime_tmdb']].isna().all(axis=1)]
 
+    print(50*"-")
     print(f"Number of rows where the two columns are NaNs: {len(indices_all_nans_box)}, {len(indices_all_nans_date)}, "
-          f"{len(indices_all_nans_time)} respectively\n")
+          f"{len(indices_all_nans_time)} respectively")
 
     print("Some examples:")
     print(df.loc[indices_all_nans_box[0]][['box_office_revenue', 'revenue']].head(2).to_string(), "\n")
     print(df.loc[indices_all_nans_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
-    print(df.loc[indices_all_nans_time[0], ['runtime_cmu', 'runtime_tmdb']], "\n")
+    print(df.loc[indices_all_nans_time[0], ['runtime_cmu', 'runtime_tmdb']])
+    print(50 * "-")
 
     # Same values
     indices_same_values_box = df.index[df['box_office_revenue'] == df['revenue']]
     indices_same_values_date = df.index[df['release_date_cmu'] == df['release_date_tmdb']]
     indices_same_values_time = df.index[df['runtime_cmu'] == df['runtime_tmdb']]
 
+    print(50 * "-")
     print(f"Number of rows where the two columns have the same values: {len(indices_same_values_box)}, "
           f"{len(indices_same_values_date)}, {len(indices_same_values_time)} respectively\n")
 
@@ -145,13 +148,14 @@ def clean_duplicates(df):
     print("Done\n")
 
     print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
-          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values\n")
-
+          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
+    print(50 * "-")
     # One value
     indices_one_value_box = df.index[df[['box_office_revenue', 'revenue']].notna().sum(axis=1) == 1]
     indices_one_value_date = df.index[df[['release_date_cmu', 'release_date_tmdb']].notna().sum(axis=1) == 1]
     indices_one_value_time = df.index[df[['runtime_cmu', 'runtime_tmdb']].notna().sum(axis=1) == 1]
 
+    print(50 * "-")
     print(f"Number of rows where the two columns have only one value: {len(indices_one_value_box)}, "
           f"{len(indices_one_value_date)}, {len(indices_one_value_time)} respectively\n")
 
@@ -175,16 +179,17 @@ def clean_duplicates(df):
     print("Done")
 
     print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
-          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values\n")
+          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
+    print(50 * "-")
 
     # Different values
     remaining_rows_box = df.shape[0] - len(indices_all_nans_box) - len(indices_same_values_box) - len(indices_one_value_box)
     remaining_rows_date = df.shape[0] - len(indices_all_nans_date) - len(indices_same_values_date) - len(indices_one_value_date)
     remaining_rows_time = df.shape[0] - len(indices_all_nans_time) - len(indices_same_values_time) - len(indices_one_value_time)
+    print(50 * "-")
     print(f"Remaining number of rows for each column respectively: \n"
           f"{remaining_rows_box}, {remaining_rows_date}, {remaining_rows_time}")
 
-    print("Some examples:")
     all_indices_box = np.concatenate([indices_all_nans_box, indices_same_values_box, indices_one_value_box])
     all_indices_date = np.concatenate([indices_all_nans_date, indices_same_values_date, indices_one_value_date])
     all_indices_time = np.concatenate([indices_all_nans_time, indices_same_values_time, indices_one_value_time])
@@ -214,6 +219,7 @@ def clean_duplicates(df):
         value = df.loc[idx, ['release_date_cmu', 'release_date_tmdb']].dropna().values[0]
         df.at[idx, 'release_date_clean'] = value
     print("Done")
+    print(50 * "-")
 
     # Create boolean masks for the conditions
     indices_close_5_box = find_similar_rows(df, indices_different_box, columns=['box_office_revenue', 'revenue'])
@@ -235,6 +241,7 @@ def clean_duplicates(df):
     for idx in indices_different_time:
         value = df.loc[idx, ['runtime_cmu', 'runtime_tmdb']].dropna().values[0]
         df.at[idx, 'box_office_clean'] = value
+    print("Done")
     print("All columns cleaned")
 
     return df
@@ -318,7 +325,6 @@ def evaluate_model_for_user(userId, data):
 
     # Return MSE values for both sets
     return train_mse, test_mse
-
 
 
 def one_hot_encoding_genre(df,movies) :
