@@ -1,7 +1,9 @@
 # A Movie Recommendation System
 ## Abstract
-Recommendation systems are everywhere ...
-A 150 word description of the project idea and goals. What’s the motivation behind your project? What story would you like to tell, and why?
+Recommendation systems are everywhere in today's digital world, enhancing user experiences across streaming platforms, e-commerce websites, and social media. This project aims to develop a movie recommendation system using a publicly available movie dataset. The goal is to analyze user preferences, movie genres, and ratings to predict and suggest films that align with a user's unique tastes. By employing techniques such as collaborative filtering, content-based filtering, and hybrid approaches, the system will provide personalized movie recommendations.
+
+The motivation behind this project comes from the growing demand for intelligent systems that can navigate vast amounts of content, ensuring users find what they love. Additionally, this project showcases the power of data-driven decision-making and machine learning in solving real-world problems, with potential applications in entertainment and beyond.
+Ca vient de ChatGPT ça mérite d'être retravaillé
 ## Research Questions
 1. ...
 2. How to compare the results obtained by different recommandation systems ?
