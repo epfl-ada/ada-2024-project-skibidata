@@ -18,7 +18,6 @@ Ca vient de ChatGPT ça mérite d'être retravaillé
 ## Methods
 There is mostly three types of recommandation system: 
 - Content-based filtering:
-
   > Content-based filtering is a recommendation strategy that suggests items similar to those a user has previously liked. It calculates similarity (often using cosine similarity) between the user’s preferences and item attributes, such as lead actors, directors, and genres. For example, if a user enjoys ‘The Prestige,’ the system recommends movies with Christian Bale, the ‘Thriller’ genre, or films by Christopher Nolan. However, content-based filtering has drawbacks. It limits exposure to different products, preventing users from exploring a variety of items. This can hinder business expansion as users might not try out new types of products.
 
 - Collaborative filtering:
@@ -46,19 +45,19 @@ We will implement all three of these recommendation systems. We will compare the
 ## Proposed timeline 
 - [x] 15 Nov. 2024: Milestone P2
 - [ ] 22 Nov. 2024: (Optional) Retreive more missing values from IMdB
-- [ ] 22 Nov. 2024:
-- [ ] TO DO 
+- [ ] 22 Nov. 2024: Finish the exploratory data analysis with analysis more specified to our goal
+- [ ] 06 Dec. 2024: Finish all recommendation systems (demographic, content-based and collaborative)
 - [ ] 20 Dec. 2024 : Milestone P3
 ## Organization within the team
-- Vincent: Free loader
-- Mayeul:
-- Arthur: Follower
-- Alex: Team leader
-- Corentin:
+- Vincent: will work on collaborative filtering
+- Mayeul: will work on collaborative filtering
+- Arthur: will work on the final website integrating our different recommendation systems 
+- Alex: will work on content-based filtering
+- Corentin: will work on content-based filtering
 ## Organization of the Github
-- results.ipynb : notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
-- Draft : folder containing files used to store experimental concepts and test scripts
-- README.md : 
+- results.ipynb: notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
+- Draft: folder containing files used to store experimental concepts and test scripts
+- Data: folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
+- README.md
 -.gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
-## Questions for TAs (optional)
-Add here any questions you have for us related to the proposed project.
+
