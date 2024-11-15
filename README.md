@@ -36,7 +36,7 @@ We will consider two types of recommandation system:
 
   > Collaborative filtering is a recommendation strategy that considers the user’s behavior and compares it with other users in the database. It uses the history of all users to influence the recommendation algorithm. Unlike a content-based recommender system, a collaborative filtering recommender relies on multiple users’ interactions with items to generate suggestions. It doesn’t solely depend on one user’s data for modeling. There are various approaches to implementing collaborative filtering, but the fundamental concept is the collective influence of multiple users on the recommendation outcome.
 
-We will implement the two systems. We will compare their recommendation based on metrics that still need to be determined and discussed. 
+We will implement the two systems. We will compare their recommendation based on metrics that still need to be determined and discussed. We divide the remaining work in the following tasks:
 
 
 - __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
