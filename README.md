@@ -1,11 +1,13 @@
-# A Movie Recommandation system 
+# A Movie Recommendation System
 ## Abstract
-A 150 word description of the project idea and goals. What’s the motivation behind your project? What story would you like to tell, and why?
+Recommendation systems are everywhere in today's digital world, enhancing user experiences across streaming platforms, e-commerce websites, and social media. This project aims to develop a movie recommendation system using a publicly available movie dataset. The goal is to analyze user preferences, movie genres, and ratings to predict and suggest films that align with a user's unique tastes. By employing techniques such as collaborative filtering, content-based filtering, and hybrid approaches, the system will provide personalized movie recommendations.
+
+The motivation behind this project comes from the growing demand for intelligent systems that can navigate vast amounts of content, ensuring users find what they love. Additionally, this project showcases the power of data-driven decision-making and machine learning in solving real-world problems, with potential applications in entertainment and beyond.
+Ca vient de ChatGPT ça mérite d'être retravaillé
 ## Research Questions
-1. First Question
-2. Second Question
+1. ...
+2. How to compare the results obtained by different recommandation systems ?
    
-A list of research questions you would like to address during the project.
 ## Additional datasets
 - __Movielens Dataset:__
    - Description:
@@ -39,20 +41,34 @@ There is mostly three types of recommandation system:
   > demographic filtering....
 
 
-- __Task 1: Cleaning the Data__
-- __Task 2: Clustering movies by similarities__
-- __Task 3: Clustering viewers by similarities__
+- __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
+   - __1.1__: Clean CMU dataset
+   - __1.2__:Complete and correct CMU dataset
+   - __1.3__: EDA on the new CMU dataset
+- __Task 2: First Recommendation System: Demographic Filtering__
+   - __2.1__: Cleaing and first data analysis on Movielens dataset
+   - __2.1__: Implement demographic filtering to obatin first results
+- __Task 3: Improving the Recommendation System: Content-based and Collaborative Filtering__      
+   - __3.1__: Implement content-based filtering      
+   - __3.2__: Implement collaborative filtering 
+- __Task 4: An even better Recommendation Sytem ? Hybrid Filtering__
+   - __4.1__: Implement an hybrid recommendation system with both content-based and collaborative filtering
 ## Proposed timeline
+- [x] 
 - [x] 15 Nov. 2024 : Milestone P2
 - [ ] TO DO
 - [ ] TO DO 
 - [ ] 20 Dec. 2024 : Milestone P3
 ## Organization within the team
-- Vincent:
+- Vincent: Free loader
 - Mayeul:
-- Arthur:
-- Alex:
+- Arthur: Follower
+- Alex: Team leader
 - Corentin:
 ## Organization of the Github
+- results.ipynb : notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
+- Draft : folder containing files used to store experimental concepts and test scripts
+- README.md : 
+-.gitignore : Configuration file used to specify files and directories that should be ignored by Git. 
 ## Questions for TAs (optional)
 Add here any questions you have for us related to the proposed project.
