@@ -56,7 +56,7 @@ We will implement the two systems. We will compare their recommendation based on
 - __Task 3: An even better Recommendation Sytem ? Hybrid Filtering__
    - __3.1__: Implement an hybrid recommendation system with both content-based and collaborative filtering
 - __Task 4: A live demo__
-   - __4.1__: Integrate the recommendation systems as a live demo in the website as well as wrinting the data story 
+   - __4.1__: Integrate the recommendation systems as a live demo in the website as well as writing the data story 
      
 ## Proposed timeline 
 - [x] 15 Nov. 2024: Milestone P2
