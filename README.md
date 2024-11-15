@@ -62,8 +62,8 @@ We will implement the two systems. We will compare their recommendation based on
 - [x] 15 Nov. 2024: Milestone P2
 - [x] 15 Nov. 2024: __Task 1.1__
 - [ ] 22 Nov. 2024: (Optional) Retreive more missing values from IMdB
-- [ ] 22 Nov. 2024: Finish the exploratory data analysis with analysis more specific to  (__Task 1.2__)
-- [ ] 06 Dec. 2024: Finish all recommendation systems (content-based and collaborative) (__Task 2__ and __Task 3__)
+- [ ] 22 Nov. 2024: Finish the exploratory data analysis with (at least) multivariate analysis  (__Task 1.2__)
+- [ ] 06 Dec. 2024: Finish all recommendation systems (content-based, collaborative and hybrid) (__Task 2__ and __Task 3__)
 - [ ] 20 Dec. 2024 : Milestone P3: integrate all recommendation systems to have a demo on the website as well as writing the data story (__Task 4__)
 
 ## Organization within the team
@@ -81,4 +81,6 @@ Our Github is organized as follows:
 - `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook. 
 - `README.md`
 - `gitignore` configuration file used to specify files and directories that should be ignored by Git.
+  
+In order to run the current `results.ipynb` notebook you also need to download the dataset from [Movienlens](https://grouplens.org/datasets/movielens/) and store it in its original folder name _ml_32m_ as we haven't use the cleaned dataset for the first models of recommendation systems yet. You also need to download the dataset presented above from [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset) and store it in a folder called _TMdB_Movielens_combined_. We acknowledge that everything needs to be cleaned and this will be done for P3 deliverable. We also intend to create a `requirements.txt` that summarizes all the necessary library to run the different recommendation systems. But this will also be done for P3. 
 
