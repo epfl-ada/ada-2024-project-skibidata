@@ -22,7 +22,7 @@ The motivation behind this project comes from the growing demand for intelligent
      
    - _Usage_:
      
-     We will use the TMdB features to both correct and complete the CMU dataset. Indeed, the CMU dataset contains a lot of wrong information. Furthermore, it might be useful to have some additional features such as the director of the movies. The ratings from the Movielens dataset are going to be used when building a recommendation system. We might loose some of the movies from the original dataset by doing so. However, we think it is better to have a cleaner of the dataset even if it means to only take a subset of the original one.
+     We will use the TMdB features to both correct and complete the CMU dataset. Indeed, the CMU dataset contains a lot of wrong information. Furthermore, it might be useful to have some additional features such as the director of the movies. The ratings from the Movielens dataset are going to be used when building a recommendation system. We might loose some of the movies from the original dataset by doing so. However, we think it is better to have a cleaner dataset even if it means to only take a subset of the original one.
      
 - __IMdB:__
 
