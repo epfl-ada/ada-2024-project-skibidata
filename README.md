@@ -62,7 +62,7 @@ We will implement the two systems. We will compare their recommendation based on
 - [x] 15 Nov. 2024: Milestone P2
 - [x] 15 Nov. 2024: __Task 1.1__
 - [ ] 22 Nov. 2024: (Optional) Retreive more missing values from IMdB
-- [ ] 22 Nov. 2024: Finish the exploratory data analysis with analysis more specific (__Task 1.2__)
+- [ ] 22 Nov. 2024: Finish the exploratory data analysis with analysis more specific to  (__Task 1.2__)
 - [ ] 06 Dec. 2024: Finish all recommendation systems (content-based and collaborative) (__Task 2__ and __Task 3__)
 - [ ] 20 Dec. 2024 : Milestone P3: integrate all recommendation systems to have a demo on the website as well as writing the data story (__Task 4__)
 
@@ -76,10 +76,9 @@ Actually, the following members are working on:
   
 ## Organization of the Github
 Our Github is organized as follows:
-- `results.ipynb` notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
-  
-- `Draft` folder containing files used to store experimental concepts and test scripts
-- `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
+- `results.ipynb` notebook that integrates all steps of the project, including data preprocessing, exploratory data analysis and some vizualization, feature engineering, and first model building.
+- `Draft` folder containing files used to store experimental concepts and test scripts. Nothing relevant for P2 deliverable can be found in this folder. 
+- `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook. 
 - `README.md`
-- `gitignore` : Configuration file used to specify files and directories that should be ignored by Git. 
+- `gitignore` configuration file used to specify files and directories that should be ignored by Git. 
 
