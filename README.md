@@ -64,11 +64,11 @@ We will implement the two systems. We will compare their recommendation based on
 
 ## Organization within the team
 Actually, the following members are working on:
-- _Vincent_: collaborative filtering
-- _Mayeul_: collaborative and content-based filtering
-- _Arthur_: the final website integrating our different recommendation systems
-- _Alex_: content-based filtering
-- _Corentin_: finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
+- _Vincent_ : collaborative filtering
+- _Mayeul_ : collaborative and content-based filtering
+- _Arthur_ : the final website integrating our different recommendation systems
+- _Alex_ : content-based filtering
+- _Corentin_ : finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
   
 ## Organization of the Github
 Our Github is organized as follows:
