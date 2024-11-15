@@ -71,7 +71,9 @@ Actually, the following members are working on:
 - Corentin: finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
   
 ## Organization of the Github
+Our Github is organized as follows:
 - results.ipynb: notebook that integrates all steps of the project, including data preprocessing, exploratory data visualization, feature engineering, and model building.
+  
 - Draft: folder containing files used to store experimental concepts and test scripts
 - Data: folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook
 - README.md
