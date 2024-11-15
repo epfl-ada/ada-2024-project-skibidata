@@ -12,13 +12,16 @@ The motivation behind this project comes from the growing demand for intelligent
 ## Additional datasets
 - __TMdN and Movielens Dataset:__
   
-   - _Description_: We use a dataset available on [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset). This dataset contains features from both [TMdB](https://www.themoviedb.org/) and [Movielens](https://grouplens.org/datasets/movielens/) websites. The TMDb (The Movie Database) is a comprehensive movie database that provides information about movies, including details like titles, ratings, release dates, revenue, genres. Movienlens is a movie recommendation system. Users can rate movies on a scale from 1 to 5.
+   - _Description_:
+     We use a dataset available on [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset). This dataset contains features from both [TMdB](https://www.themoviedb.org/) and [Movielens](https://grouplens.org/datasets/movielens/) websites. The TMDb (The Movie Database) is a comprehensive movie database that provides information about movies, including details like titles, ratings, release dates, revenue, genres. Movienlens is a movie recommendation system. Users can rate movies on a scale from 1 to 5.
      
-   - _Usage_: We will use the TMdB features to both correct and complete the CMU dataset. Indeed, the CMU dataset contains a lot of wrong information. Furthermore, it might be useful to have some additional features such as the director of the movies. The ratings from the Movielens dataset are going to be used when building a recommendation system. We might loose some of the movies from the original dataset by doing so. However, we think it is better to have a cleaner of the dataset even if it means to only take a subset of the original one.
+   - _Usage_:
+     We will use the TMdB features to both correct and complete the CMU dataset. Indeed, the CMU dataset contains a lot of wrong information. Furthermore, it might be useful to have some additional features such as the director of the movies. The ratings from the Movielens dataset are going to be used when building a recommendation system. We might loose some of the movies from the original dataset by doing so. However, we think it is better to have a cleaner of the dataset even if it means to only take a subset of the original one.
      
 - __IMdB:__
   
-   - _Usage_: We might use (not done yet) the API from [IMdB](https://www.imdb.com/) to retrieve missing values when possible.
+   - _Usage_:
+     We might use (not done yet) the API from [IMdB](https://www.imdb.com/) to retrieve missing values when possible.
   
 ## Methods
 We will consider two types of recommandation system: 
