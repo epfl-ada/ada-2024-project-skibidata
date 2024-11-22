@@ -285,7 +285,7 @@ def evaluate_model_for_user(userId, data):
     user_rating = user_rating.iloc[:, 5:].sample(frac=1)  # Shuffle data
     user_rating = user_rating.drop(columns=['timestamp'])
     y = user_rating['rating']
-    x = user_rating.iloc[:, 1:]
+    x = user_rating.drop(columns='rating')
 
     # Split into training and testing sets
     length = len(y)
@@ -349,3 +349,30 @@ def one_hot_encoding_genre(df,movies) :
 
 
 
+def Total_eval(userId,df,movies) :
+    """
+    Creates one hot encoded features per unique genre 
+
+    """
+    # Merges df and movies
+    mini_df=df[df['userId']==userId]
+    rating_films=pd.merge(movies, mini_df, on='movieId', how='inner')
+    
+    # Create list of unique_genres
+    unique_genres = movies['genres'].unique()
+    all_genres = set('|'.join(unique_genres).split('|'))
+
+    all_genres_list = list(all_genres)
+    all_genres_list.remove('(no genres listed)')
+    
+    unique_director = movies['director'].unique()
+
+    all_director_list = list(unique_director)
+    all_director_list.remove('nobody')
+    # Create a one hot encoding for each genre
+    for genre in all_genres_list:
+        rating_films[genre] = rating_films['genres'].apply(lambda x: genre in x.split('|'))
+    # Create a one hot encoding for each director
+    for director in all_director_list:
+        rating_films[director] = rating_films['director'].apply(lambda x: director in x)
+    return evaluate_model_for_user(userId,rating_films)
