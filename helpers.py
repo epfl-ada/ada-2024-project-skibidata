@@ -77,8 +77,6 @@ def show_missing_values(df):
 
 
 def get_director(x):
-    if isinstance(x, str):
-        x = ast.literal_eval(x)
 
     if isinstance(x, list):
         for i in x:
