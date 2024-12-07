@@ -32,7 +32,7 @@ The motivation behind this project comes from the growing demand for intelligent
   
    - _Usage_:
      
-     We might use (not done yet) the API from [IMdB](https://www.imdb.com/) to retrieve missing values when possible.
+     We use the API from [IMdB](https://www.imdb.com/) to retrieve basic informations
   
 ## Methods
 We will consider two types of recommandation system: 
@@ -44,7 +44,16 @@ We will consider two types of recommandation system:
 
   > Collaborative filtering is a recommendation strategy that considers the user’s behavior and compares it with other users in the database. It uses the history of all users to influence the recommendation algorithm. Unlike a content-based recommender system, a collaborative filtering recommender relies on multiple users’ interactions with items to generate suggestions. It doesn’t solely depend on one user’s data for modeling. There are various approaches to implementing collaborative filtering, but the fundamental concept is the collective influence of multiple users on the recommendation outcome.
 
-We will implement the two systems. We will compare their recommendation based on metrics that still need to be determined and discussed. We divide the remaining work in the following tasks:
+For each of these types of filtering we implement different recommender systems:
+- Content-based filtering:
+   - Autoencoder
+   - ...
+- Collaborative filtering:
+   - User-User similarity
+   - Item-Item similarity
+   - SVD
+
+The recommender systems are then compared with metrics such as RMSE or MAE when possible. Otherwise we will compare the order of recommendations with the actual ratings given by a user.  
 
 
 - __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
@@ -61,26 +70,28 @@ We will implement the two systems. We will compare their recommendation based on
 ## Proposed timeline 
 - [x] 15 Nov. 2024: Milestone P2
 - [x] 15 Nov. 2024: __Task 1.1__
-- [ ] 22 Nov. 2024: (Optional) Retreive more missing values from IMdB
-- [ ] 22 Nov. 2024: Finish the exploratory data analysis with (at least) multivariate analysis  (__Task 1.2__)
-- [ ] 06 Dec. 2024: Finish all recommendation systems (content-based, collaborative and hybrid) (__Task 2__ and __Task 3__)
+- [x] 22 Nov. 2024: Finish the exploratory data analysis with multivariate analysis  (__Task 1.2__)
+- [ ] 13 Dec. 2024: Finish all recommendation systems (content-based, collaborative and hybrid) (__Task 2__ and __Task 3__)
 - [ ] 20 Dec. 2024 : Milestone P3: integrate all recommendation systems to have a demo on the website as well as writing the data story (__Task 4__)
 
 ## Organization within the team
 Actually, the following members are working on:
 - _Vincent_ : collaborative filtering
-- _Mayeul_ : collaborative and content-based filtering
-- _Arthur_ : the final website integrating our different recommendation systems
+- _Mayeul_ : some visualization
+- _Arthur_ : the final website that will integrate our different recommendation systems
 - _Alex_ : content-based filtering
 - _Corentin_ : finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
   
 ## Organization of the Github
 Our Github is organized as follows:
 - `results.ipynb` notebook that integrates all steps of the project, including data preprocessing, exploratory data analysis and some vizualization, feature engineering, and first model building.
+- `helpers.py` python file containing all functions needed for visualization and cleaning.
+- `collaborative.py` python file containing all functions needed for the collaborative filtering based recommender systems.
+- `content_based.py` python file containing all functions needed for the content-based filtering based recommender systems.
 - `Draft` folder containing files used to store experimental concepts and test scripts. Nothing relevant for P2 deliverable can be found in this folder. 
 - `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook. 
 - `README.md`
+- `requirements.txt` text file specifying the necessary libraries to run the results noetbook. 
 - `gitignore` configuration file used to specify files and directories that should be ignored by Git.
   
-In order to run the current `results.ipynb` notebook you need to download the dataset presented above from [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset) and store it in a folder called _TMdB_Movielens_combined/_ as well as download the [CMU Movie Summary Corpus Dataset](http://www.cs.cmu.edu/~ark/personas/) and store it in _MovieSummaries/MovieSummaries/_. You also need to download the dataset from [Movienlens](https://grouplens.org/datasets/movielens/) and store it in its original folder name _ml_32m/_ as we haven't use the cleaned dataset for the first models of recommendation systems yet. We acknowledge that everything needs to be cleaned and this will be done for P3 deliverable. We also intend to create a `requirements.txt` that summarizes all the necessary library to run the different recommendation systems. But this will also be done for P3. 
-
+In order to run the current `results.ipynb` notebook you need to download the dataset presented above from [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset) and store it in a folder called _Data/TMdB/_ as well as download the [CMU Movie Summary Corpus Dataset](http://www.cs.cmu.edu/~ark/personas/) and store it in _Data/MovieSummaries/_.
