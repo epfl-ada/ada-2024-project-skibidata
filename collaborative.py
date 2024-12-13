@@ -3,6 +3,8 @@ import joblib
 import os
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import heapq
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 from sklearn.model_selection import train_test_split
@@ -215,6 +217,19 @@ def add_predicted_ratings(results, selected_users_df):
     )
 
     return df_with_predictions
+
+
+def plot_predicted_ratings_distribution(df):
+    plt.figure(figsize=(15, 5))
+    for i, method in enumerate(['basic', 'mean_centering', 'z_normalization'], 1):
+        plt.subplot(1, 3, i)
+        plt.hist(df[f'rating_error_{method}'], bins=30, edgecolor='black')
+        plt.title(f'{method.replace("_", " ").title()} Error Distribution')
+        plt.xlabel('Absolute Error')
+        plt.ylabel('Frequency')
+
+    plt.tight_layout()
+    plt.show()
 
 
 
@@ -581,6 +596,9 @@ class SparseSVDRecommender:
         recommendations = [rec for rec in recommendations if rec[0] not in rated_movies]
 
         return recommendations[:n_items]
+
+
+
 
 
 
