@@ -76,6 +76,34 @@ def show_missing_values(df):
     return missing_info
 
 
+def merge_tmdb_datasets(df_tmdb_movie, df_tmdb_keywords, df_tmdb_credits):
+
+    df_movie = df_tmdb_movie.copy()
+    df_keywords = df_tmdb_keywords.copy()
+    df_credits = df_tmdb_credits.copy()
+
+    # Drop duplicates
+    df_movie.drop_duplicates(subset=['id'], keep='first', inplace=True, ignore_index=True)
+    df_keywords.drop_duplicates(subset=['id'], keep='first', inplace=True, ignore_index=True)
+    df_credits.drop_duplicates(subset=['id'], keep='first', inplace=True, ignore_index=True)
+
+    # Convert id to numeric
+    df_movie['id'] = pd.to_numeric(df_movie['id'], errors='coerce')
+    df_keywords['id'] = pd.to_numeric(df_keywords['id'], errors='coerce')
+    df_credits['id'] = pd.to_numeric(df_credits['id'], errors='coerce')
+
+    # Drop nan values
+    df_movie.dropna(subset=['id'], inplace=True)
+    df_keywords.dropna(subset=['id'], inplace=True)
+    df_credits.dropna(subset=['id'], inplace=True)
+
+    # Merge
+    df_tmp = pd.merge(df_movie, df_keywords, on='id', how='inner')
+    df_tmdb = pd.merge(df_tmp, df_credits, on='id', how='inner')
+
+    return df_tmdb
+
+
 def get_director(x):
 
     if isinstance(x, list):
@@ -100,69 +128,69 @@ def find_similar_rows(df, indices_different_box, columns):
 
 
 def clean_duplicates(df):
-
-    print("Creating new columns 'box_office_clean', 'release_date_clean and 'runtime_clean' with NaNs or NaTs")
+    print("Cleaning the columns...")
+    #print("Creating new columns 'box_office_clean', 'release_date_clean and 'runtime_clean' with NaNs or NaTs")
 
     df['box_office_clean'] = float('nan')
     df['release_date_clean'] = pd.NaT
     df['runtime_clean'] = float('nan')
 
-    print(f"Each of them has respectively {df['box_office_clean'].isna().sum()}, {df['release_date_clean'].isna().sum()} "
-          f"and {df['runtime_clean'].isna().sum()} NaN/Nat values")
+    #print(f"Each of them has respectively {df['box_office_clean'].isna().sum()}, {df['release_date_clean'].isna().sum()} "
+    #      f"and {df['runtime_clean'].isna().sum()} NaN/Nat values")
 
     # All NaNs
     indices_all_nans_box = df.index[df[['box_office_revenue', 'revenue']].isna().all(axis=1)]
     indices_all_nans_date = df.index[df[['release_date_cmu', 'release_date_tmdb']].isna().all(axis=1)]
     indices_all_nans_time = df.index[df[['runtime_cmu', 'runtime_tmdb']].isna().all(axis=1)]
 
-    print(50*"-")
-    print(f"Number of rows where the two columns are NaNs: {len(indices_all_nans_box)}, {len(indices_all_nans_date)}, "
-          f"{len(indices_all_nans_time)} respectively")
+    #print(50*"-")
+    #print(f"Number of rows where the two columns are NaNs: {len(indices_all_nans_box)}, {len(indices_all_nans_date)}, "
+    #      f"{len(indices_all_nans_time)} respectively")
 
-    print("Some examples:")
-    print(df.loc[indices_all_nans_box[0]][['box_office_revenue', 'revenue']].head(2).to_string(), "\n")
-    print(df.loc[indices_all_nans_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
-    print(df.loc[indices_all_nans_time[0], ['runtime_cmu', 'runtime_tmdb']])
-    print(50 * "-")
+    #print("Some examples:")
+    #print(df.loc[indices_all_nans_box[0]][['box_office_revenue', 'revenue']].head(2).to_string(), "\n")
+    #print(df.loc[indices_all_nans_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
+    #print(df.loc[indices_all_nans_time[0], ['runtime_cmu', 'runtime_tmdb']])
+    #print(50 * "-")
 
     # Same values
     indices_same_values_box = df.index[df['box_office_revenue'] == df['revenue']]
     indices_same_values_date = df.index[df['release_date_cmu'] == df['release_date_tmdb']]
     indices_same_values_time = df.index[df['runtime_cmu'] == df['runtime_tmdb']]
 
-    print(50 * "-")
-    print(f"Number of rows where the two columns have the same values: {len(indices_same_values_box)}, "
-          f"{len(indices_same_values_date)}, {len(indices_same_values_time)} respectively\n")
+    #print(50 * "-")
+    #print(f"Number of rows where the two columns have the same values: {len(indices_same_values_box)}, "
+    #      f"{len(indices_same_values_date)}, {len(indices_same_values_time)} respectively\n")
 
-    print("Some examples:")
-    print(df.loc[indices_same_values_box[0], ['box_office_revenue', 'revenue']], "\n")
-    print(df.loc[indices_same_values_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
-    print(df.loc[indices_same_values_time[0], ['runtime_cmu', 'runtime_tmdb']], "\n")
+    #print("Some examples:")
+    #print(df.loc[indices_same_values_box[0], ['box_office_revenue', 'revenue']], "\n")
+    #print(df.loc[indices_same_values_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
+    #print(df.loc[indices_same_values_time[0], ['runtime_cmu', 'runtime_tmdb']], "\n")
 
-    print("Updating values in the new columns...")
+    #print("Updating values in the new columns...")
     df.loc[indices_same_values_box, 'box_office_clean'] = df.loc[indices_same_values_box, 'box_office_revenue']
     df.loc[indices_same_values_date, 'release_date_clean'] = df.loc[indices_same_values_date, 'release_date_cmu']
     df.loc[indices_same_values_time, 'runtime_clean'] = df.loc[indices_same_values_time, 'runtime_cmu']
-    print("Done\n")
+    #print("Done\n")
 
-    print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
-          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
-    print(50 * "-")
+    #print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
+    #      f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
+    #print(50 * "-")
     # One value
     indices_one_value_box = df.index[df[['box_office_revenue', 'revenue']].notna().sum(axis=1) == 1]
     indices_one_value_date = df.index[df[['release_date_cmu', 'release_date_tmdb']].notna().sum(axis=1) == 1]
     indices_one_value_time = df.index[df[['runtime_cmu', 'runtime_tmdb']].notna().sum(axis=1) == 1]
 
-    print(50 * "-")
-    print(f"Number of rows where the two columns have only one value: {len(indices_one_value_box)}, "
-          f"{len(indices_one_value_date)}, {len(indices_one_value_time)} respectively\n")
+    #print(50 * "-")
+    #print(f"Number of rows where the two columns have only one value: {len(indices_one_value_box)}, "
+    #      f"{len(indices_one_value_date)}, {len(indices_one_value_time)} respectively\n")
 
-    print("Some examples:")
-    print(df.loc[indices_one_value_box[0], ['box_office_revenue', 'revenue']], "\n")
-    print(df.loc[indices_one_value_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
-    print(df.loc[indices_one_value_time[0], ['runtime_cmu', 'runtime_tmdb']], "\n")
+    #print("Some examples:")
+    #print(df.loc[indices_one_value_box[0], ['box_office_revenue', 'revenue']], "\n")
+    #print(df.loc[indices_one_value_date[0], ['release_date_cmu', 'release_date_tmdb']], "\n")
+    #print(df.loc[indices_one_value_time[0], ['runtime_cmu', 'runtime_tmdb']], "\n")
 
-    print("Updating values in the new columns...")
+    #print("Updating values in the new columns...")
     for idx in indices_one_value_box:
         value = df.loc[idx, ['box_office_revenue', 'revenue']].dropna().values[0]
         df.at[idx, 'box_office_clean'] = value
@@ -174,19 +202,19 @@ def clean_duplicates(df):
     for idx in indices_one_value_box:
         value = df.loc[idx, ['box_office_revenue', 'revenue']].dropna().values[0]
         df.at[idx, 'box_office_clean'] = value
-    print("Done")
+    #print("Done")
 
-    print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
-          f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
-    print(50 * "-")
+    #print(f"Each of the column has now respectively {df['box_office_clean'].isna().sum()}, "
+    #      f"{df['release_date_clean'].isna().sum()} and {df['runtime_clean'].isna().sum()} NaN/Nat values")
+    #print(50 * "-")
 
     # Different values
     remaining_rows_box = df.shape[0] - len(indices_all_nans_box) - len(indices_same_values_box) - len(indices_one_value_box)
     remaining_rows_date = df.shape[0] - len(indices_all_nans_date) - len(indices_same_values_date) - len(indices_one_value_date)
     remaining_rows_time = df.shape[0] - len(indices_all_nans_time) - len(indices_same_values_time) - len(indices_one_value_time)
-    print(50 * "-")
-    print(f"Remaining number of rows for each column respectively: \n"
-          f"{remaining_rows_box}, {remaining_rows_date}, {remaining_rows_time}")
+    #print(50 * "-")
+    #print(f"Remaining number of rows for each column respectively: \n"
+    #      f"{remaining_rows_box}, {remaining_rows_date}, {remaining_rows_time}")
 
     all_indices_box = np.concatenate([indices_all_nans_box, indices_same_values_box, indices_one_value_box])
     all_indices_date = np.concatenate([indices_all_nans_date, indices_same_values_date, indices_one_value_date])
@@ -197,41 +225,41 @@ def clean_duplicates(df):
     indices_different_time = df.index.difference(all_indices_time)
 
     # And what form do they have ?
-    print("Some examples:")
-    print(df.loc[indices_different_box, ['box_office_revenue', 'revenue']].head(), "\n")
-    print(df.loc[indices_different_date, ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
-    print(df.loc[indices_different_time, ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
+    #print("Some examples:")
+    #print(df.loc[indices_different_box, ['box_office_revenue', 'revenue']].head(), "\n")
+    #print(df.loc[indices_different_date, ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
+    #print(df.loc[indices_different_time, ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
 
     # We now clean the release date when we have different values
-    print("Now handling different values for the release date")
+    #print("Now handling different values for the release date")
     indices_same_year = df.index[(df['release_date_cmu'].dt.year == df['release_date_tmdb'].dt.year)]
     indices_same_year = indices_same_year.difference(indices_same_values_date)
 
-    print(f"We have {len(indices_same_year)} rows with the same year but not equal. Some examples:\n")
-    print(df.loc[indices_same_year, ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
-    print(f"Some examples of the remaining rows:\n")
-    print(df.loc[indices_different_date.difference(indices_same_year), ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
+    #print(f"We have {len(indices_same_year)} rows with the same year but not equal. Some examples:\n")
+    #print(df.loc[indices_same_year, ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
+    #print(f"Some examples of the remaining rows:\n")
+    #print(df.loc[indices_different_date.difference(indices_same_year), ['release_date_cmu', 'release_date_tmdb']].head(), "\n")
 
-    print("Updating values in the release_date_clean...")
+    #print("Updating values in the release_date_clean...")
     for idx in indices_different_date:
         value = df.loc[idx, ['release_date_cmu', 'release_date_tmdb']].dropna().values[0]
         df.at[idx, 'release_date_clean'] = value
-    print("Done")
-    print(50 * "-")
+    #print("Done")
+    #print(50 * "-")
 
     # Create boolean masks for the conditions
     indices_close_5_box = find_similar_rows(df, indices_different_box, columns=['box_office_revenue', 'revenue'])
     indices_close_5_time = find_similar_rows(df, indices_different_box, columns=['runtime_cmu', 'runtime_tmdb'])
 
-    print("Some examples with 5% difference:\n")
-    print(df.loc[indices_close_5_box, ['box_office_revenue', 'revenue']].head(), "\n")
-    print(df.loc[indices_close_5_time, ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
+    #print("Some examples with 5% difference:\n")
+    #print(df.loc[indices_close_5_box, ['box_office_revenue', 'revenue']].head(), "\n")
+    #print(df.loc[indices_close_5_time, ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
 
-    print("Some examples with more difference:\n")
-    print(df.loc[indices_different_box.difference(indices_close_5_box), ['box_office_revenue', 'revenue']].head(), "\n")
-    print(df.loc[indices_different_time.difference(indices_close_5_time), ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
+    #print("Some examples with more difference:\n")
+    #print(df.loc[indices_different_box.difference(indices_close_5_box), ['box_office_revenue', 'revenue']].head(), "\n")
+    #print(df.loc[indices_different_time.difference(indices_close_5_time), ['runtime_cmu', 'runtime_tmdb']].head(), "\n")
 
-    print("Updating values in the box_office_clean and runtime_clean...")
+    #print("Updating values in the box_office_clean and runtime_clean...")
     for idx in indices_different_box:
         value = df.loc[idx, ['box_office_revenue', 'revenue']].dropna().values[0]
         df.at[idx, 'box_office_clean'] = value
@@ -239,7 +267,7 @@ def clean_duplicates(df):
     for idx in indices_different_time:
         value = df.loc[idx, ['runtime_cmu', 'runtime_tmdb']].dropna().values[0]
         df.at[idx, 'box_office_clean'] = value
-    print("Done")
+    #print("Done")
     print("All columns cleaned")
 
     return df
