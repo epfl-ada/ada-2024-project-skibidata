@@ -55,27 +55,7 @@ For each of these types of filtering we implement different recommender systems:
 
 The recommender systems are then compared with metrics such as RMSE or MAE when possible. Otherwise we will compare the order of recommendations with the actual ratings given by a user.  
 
-
-- __Task 1: Cleaning and Exploratory Data Analysis of CMU Dataset__
-   - __1.1__: Clean, correct and complete CMU dataset 
-   - __1.2__: Perform some exploratory data analysis on the new dataset
-- __Task 2: Improving the Recommendation System: Content-based and Collaborative Filtering__      
-   - __2.1__: Implement content-based filtering (find ways to cluster movies by similarities)         
-   - __2.2__: Implement collaborative filtering (find ways to cluster users by same taste)  
-- __Task 3: An even better Recommendation Sytem ? Hybrid Filtering__
-   - __3.1__: Implement an hybrid recommendation system with both content-based and collaborative filtering
-- __Task 4: A live demo__
-   - __4.1__: Integrate the recommendation systems as a live demo in the website as well as writing the data story 
-     
-## Proposed timeline 
-- [x] 15 Nov. 2024: Milestone P2
-- [x] 15 Nov. 2024: __Task 1.1__
-- [x] 22 Nov. 2024: Finish the exploratory data analysis with multivariate analysis  (__Task 1.2__)
-- [ ] 13 Dec. 2024: Finish all recommendation systems (content-based, collaborative and hybrid) (__Task 2__ and __Task 3__)
-- [ ] 20 Dec. 2024 : Milestone P3: integrate all recommendation systems to have a demo on the website as well as writing the data story (__Task 4__)
-
-## Organization within the team
-Actually, the following members are working on:
+## Contribution of each member to the project
 - _Vincent_ : collaborative filtering
 - _Mayeul_ : some visualization
 - _Arthur_ : the final website that will integrate our different recommendation systems
