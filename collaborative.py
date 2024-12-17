@@ -1,6 +1,7 @@
 import time
 import joblib
 import os
+import scipy
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -231,9 +232,215 @@ def plot_predicted_ratings_distribution(df):
     plt.tight_layout()
     plt.show()
 
+############################# User-Based Collaborative Filtering ##############################
+
+# Handling New User
+# Following function assume ratings for a new user are passed in the following form:
+# ratings_new_user = [('imdb_id', rating), (.,.), (.,.), ...] where the imdb_id does not contain 'tt0..'
 
 
+def reco_user_based_new_user(ratings_new_user, movie_map, df_ratings, knn, means_by_user, std_by_user, number_of_movies,
+                             num_reco=10, number_of_neighbors=100, max_number_of_movies=100, number_of_users=30):
 
+    start = time.time()
+    # Get ids and ratings of new user
+    movies_id_new_user = np.array([int(movie_map[x[0]]) for x in ratings_new_user])
+    ratings_to_take = np.array([x[1] for x in ratings_new_user])
+
+    # Compute some needed quantity
+    global_mean = df_ratings['rating'].mean()
+    mean_user = np.mean(ratings_to_take)
+    std_user = np.std(ratings_to_take)
+    number_of_movies = number_of_movies
+
+    # Aggregate users that have seen a given movie
+    movie_users = df_ratings.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
+
+    # Create sparse vector for the user
+    sparse_vector = scipy.sparse.csr_matrix(
+        (ratings_to_take, (np.zeros_like(movies_id_new_user), movies_id_new_user)),
+        shape=(1, number_of_movies)
+    )
+
+    # Compute distances and indices of neighbors
+    distances, neighbor_indices = knn.kneighbors(
+        sparse_vector,
+        n_neighbors=number_of_neighbors,
+        return_distance=True
+    )
+
+    # Remove self from neighbors (first index)
+    neighbor_indices = neighbor_indices[0, 1:]
+    dist = distances[0, 1:]
+
+    # Convert distances to weights
+    weights = 1 - dist
+
+    weights_dict = {neighbor_indices[i]: weights[i] for i in range(len(neighbor_indices))}
+    user_results_mean_centering = []
+    user_results_z_normalization = []
+    user_results_basic = []
+
+    # Reduced number of movies if needed
+    selected_movies = df_ratings[df_ratings['sparse_user_id'].isin(neighbor_indices)]['sparse_movie_id'].unique()
+    selected_movies = np.setdiff1d(selected_movies, movies_id_new_user)
+    print(len(selected_movies))
+    if len(selected_movies) > max_number_of_movies:
+        selected_movies = np.random.choice(selected_movies, size=max_number_of_movies, replace=False)
+
+    print(f"Computing ratings for {len(selected_movies)} movies")
+
+    # Compute predicted ratings for all movies
+    for i, movie in enumerate(selected_movies):
+
+        movie_users_list = movie_users.get(movie, [])
+        top_users = heapq.nlargest(
+            number_of_users,  # limiting to top 30 users
+            [(uid, weights_dict.get(uid, 0)) for uid in movie_users_list if weights_dict.get(uid, 0) > 0],
+            key=lambda x: x[1]
+        )
+
+        # Filter ratings for top users
+        user_ratings = df_ratings[
+            (df_ratings['sparse_movie_id'] == movie) &
+            (df_ratings['sparse_user_id'].isin([u[0] for u in top_users]))
+            ].copy()
+
+        # print(user_ratings)
+
+        if len(user_ratings) < 3:
+            user_results_mean_centering.append((movie, global_mean))
+            user_results_z_normalization.append((movie, global_mean))
+            user_results_basic.append((movie, global_mean))
+            continue
+
+        # Add columns for calculations
+        user_ratings.loc[:, 'user_weight'] = user_ratings['sparse_user_id'].map(dict(top_users))
+        user_ratings.loc[:, 'mean_rating'] = user_ratings['sparse_user_id'].map(means_by_user)
+        user_ratings.loc[:, 'std_rating'] = user_ratings['sparse_user_id'].map(std_by_user)
+        user_ratings.loc[:, 'weighted_diff'] = user_ratings['user_weight'] * (
+                    user_ratings['rating'] - user_ratings['mean_rating'])
+
+        # Compute prediction methods
+        numerator = user_ratings['weighted_diff'].sum()
+        denominator = user_ratings['user_weight'].abs().sum()
+
+        numerator2 = (user_ratings['weighted_diff'] / user_ratings['std_rating']).sum()
+        numerator3 = (user_ratings['user_weight'] * user_ratings['rating']).sum()
+
+        if denominator > 0:
+            # Mean Centering Method
+            result_mean_centering = numerator / denominator + mean_user
+
+            # Z-Normalization Method
+            result_z_normalization = numerator2 * std_user / denominator + mean_user
+
+            # Basic Weighted Average Method
+            result_basic = numerator3 / denominator
+
+            user_results_mean_centering.append((movie, result_mean_centering))
+            user_results_z_normalization.append((movie, result_z_normalization))
+            user_results_basic.append((movie, result_basic))
+
+        # Sort and get top recommendations for each method
+    recommendations = {
+        'basic': sorted(user_results_basic, key=lambda x: x[1], reverse=True)[:num_reco],
+        'mean_centering': sorted(user_results_mean_centering, key=lambda x: x[1], reverse=True)[:num_reco],
+        'z_normalization': sorted(user_results_z_normalization, key=lambda x: x[1], reverse=True)[:num_reco]
+    }
+    print(f"Total time taken: {time.time() - start}")
+    return recommendations
+
+############################# Item-Based Collaborative Filtering ##############################
+
+def reco_item_based_new_user(ratings_new_user, movie_map, knn, means_by_movie, std_by_movie,
+                             ratings_matrix, number_of_reco=30, number_of_movies_for_reco=50):
+    start = time.time()
+    print("Searching optimal threshold...")
+    min_threshold = 0.0  # Minimum possible threshold
+    max_threshold = 1.0  # Maximum possible threshold
+    target_threshold = 0.5  # Starting point for binary search
+    target_movies = number_of_movies_for_reco  # Target number of movies
+    tolerance = 0.1 * target_movies  # ±10% of the target
+    lower_bound = target_movies - tolerance  # Lower limit (90 for target 100)
+    upper_bound = target_movies + tolerance  # Upper limit (110 for target 100)
+
+    movie_id_rated = np.array([int(movie_map[x[0]]) for x in ratings_new_user])
+    ratings_to_take = np.array([x[1] for x in ratings_new_user])
+    ratings_matrix_col = ratings_matrix.tocsc()
+
+    optimal_threshold = target_threshold
+
+    while max_threshold - min_threshold > 0.01:  # Precision of the search
+        indices_to_keep = set()  # Reset for this threshold
+
+        for movie in movie_id_rated:
+            # Extract the movie vector as a column from the ratings matrix
+            movie_vector = ratings_matrix_col.getcol(movie)
+
+            # Find neighbors for the current movie
+            distances, indices = knn.kneighbors(movie_vector.T, n_neighbors=ratings_matrix.shape[1])
+
+            # Exclude the first neighbor (which is the movie itself)
+            neighbor_indices = indices[0, 1:]
+            distances = distances[0, 1:]
+
+            # Compute weights and keep indices where weights > target_threshold
+            weights = 1 - distances
+            indices_to_keep.update(neighbor_indices[weights > target_threshold])
+
+        num_indices = len(indices_to_keep)
+        print(f"Threshold: {target_threshold}, number of movies: {num_indices}")
+
+        # Check if the number of movies is within the tolerance range
+        if lower_bound <= num_indices <= upper_bound:
+            optimal_threshold = target_threshold  # Found an acceptable threshold
+            break
+
+        # Binary search logic
+        if num_indices < lower_bound:  # Too few indices, decrease threshold
+            max_threshold = target_threshold  # Move left
+        else:  # Too many indices, increase threshold
+            min_threshold = target_threshold  # Move right
+
+        target_threshold = (min_threshold + max_threshold) / 2  # Update midpoint
+
+    print(f"Optimal threshold: {optimal_threshold}, number of movies: {num_indices}")
+
+    recommendation_mean = {}
+    recommendation_z = {}
+
+    for i, movie in enumerate(indices_to_keep):
+        if movie in movie_id_rated:
+            continue
+
+        movie_vector = ratings_matrix_col.getcol(movie)
+        distances, indices = knn.kneighbors(movie_vector.T, n_neighbors=ratings_matrix.shape[1])
+        neighbor_indices = indices[0, 1:]
+        distances = distances[0, 1:]
+
+        weights = 1 - distances
+        indices = np.where(np.isin(neighbor_indices, movie_id_rated))[0]
+        weights_to_take = weights[indices]
+        sum_of_weights = np.sum(np.abs(weights_to_take))
+        mean_movie_to_predict = means_by_movie.loc[movie]
+        # print(mean_movie_to_predict)
+        std_movie_to_predict = std_by_movie.loc[movie]
+        # print(std_movie_to_predict)
+        means = means_by_movie.loc[list(indices)].to_numpy()
+        stds = std_by_movie.loc[list(indices)].to_numpy()
+        predicted_rating = mean_movie_to_predict + np.dot(ratings_to_take - means, weights_to_take) / sum_of_weights
+        predicted_rating2 = mean_movie_to_predict + std_movie_to_predict * np.dot((ratings_to_take - means) / stds,
+                                                                                  weights_to_take) / sum_of_weights
+
+        recommendation_mean[movie] = predicted_rating
+        recommendation_z[movie] = predicted_rating2
+
+    sorted_mean = sorted(recommendation_mean.items(), key=lambda item: item[1], reverse=True)[:number_of_reco]
+    sorted_z = sorted(recommendation_z.items(), key=lambda item: item[1], reverse=True)[:number_of_reco]
+    print(f"Total time taken: {time.time() - start}")
+
+    return sorted_mean, sorted_z
 
 
 ############################# Dimensionality Reduction Methods ##############################
