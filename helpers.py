@@ -8,9 +8,11 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+"""
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
+"""
 from sklearn.metrics import mean_squared_error, r2_score
 
 
@@ -272,7 +274,7 @@ def clean_duplicates(df):
 
     return df
 
-
+"""
 def create_world_map(data, col, world, log=False):
 
     fig, ax = plt.subplots(1, 1, figsize=(15, 10))
@@ -299,8 +301,8 @@ def create_world_map(data, col, world, log=False):
         cbar.set_label('Number of Movies', fontsize=14)
 
     plt.show()
-
-
+"""
+'''
 def evaluate_model_for_user(userId, data):
     """
     Generates training and test splits for a given user ID, trains a neural network,
@@ -352,7 +354,6 @@ def evaluate_model_for_user(userId, data):
     # Return MSE values for both sets
     return train_mse, test_mse
 
-
 def one_hot_encoding_genre(df,movies) :
     """
     Creates one hot encoded features per unique genre 
@@ -402,3 +403,54 @@ def Total_eval(userId,df,movies) :
     for director in all_director_list:
         rating_films[director] = rating_films['director'].apply(lambda x: director in x)
     return evaluate_model_for_user(userId,rating_films)
+'''
+
+
+def plot_movies_by_country(df):
+    """
+    Create a choropleth map showing the number of movies per country
+    with logarithmic-like color scaling, but true values on the colorbar
+    and in the hover tooltip.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame with columns 'country' and 'movie_count'
+
+    Returns:
+    plotly.graph_objs._figure.Figure: Interactive choropleth map
+    """
+    # Ensure the DataFrame has the correct columns
+    if 'country' not in df.columns or 'movie_count' not in df.columns:
+        raise ValueError("DataFrame must have 'country' and 'movie_count' columns")
+
+    # Apply logarithmic transformation for color scaling
+    df['log_movie_count'] = np.log1p(df['movie_count'])  # Avoid log(0) issues
+
+    # Define tick values and labels for the colorbar
+    tick_vals = np.linspace(df['log_movie_count'].min(), df['log_movie_count'].max(), num=6)
+    tick_labels = [int(np.expm1(val)) for val in tick_vals]  # Reverse the log1p transformation
+
+    # Create the choropleth map
+    fig = go.Figure(data=go.Choropleth(
+        locations=df['country'],  # Country names
+        locationmode='country names',  # Use full country names
+        z=df['log_movie_count'],  # Logarithmically transformed values for the color scale
+        text=[f"{country}: {count:,} movies" for country, count in zip(df['country'], df['movie_count'])],  # Hover text
+        hoverinfo="text",  # Use custom hover text
+        colorscale='Viridis',  # Color gradient
+        colorbar=dict(
+            title='Number of Movies',
+            tickvals=tick_vals,  # Colorbar ticks based on the transformed scale
+            ticktext=[f"{label:,}" for label in tick_labels]  # Display original values as tick labels
+        )
+    ))
+
+    # Customize the layout
+    fig.update_layout(
+        # title_text='Number of Movies per Country',
+        geo_scope='world',  # Set the map scope to world
+        height=600,  # Map height
+        width=1000,  # Map width
+        title_x=0.5  # Center the title
+    )
+
+    return fig
