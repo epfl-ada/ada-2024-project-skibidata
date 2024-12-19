@@ -3,8 +3,12 @@ import re
 import ast
 import numpy as np
 import pandas as pd
+import calendar
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import  plotly.express as px
 from SPARQLWrapper import SPARQLWrapper, JSON
+from collections import Counter
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -14,6 +18,15 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 """
 from sklearn.metrics import mean_squared_error, r2_score
+
+def format_imdb_id(imdb_id):
+    # example of use: df_links['imdbId'] = df_links['imdbId'].apply(format_imdb_id)
+    return 'tt' + str(imdb_id).zfill(7)
+
+
+def unformat_imdb_id(formatted_imdb_id):
+    # example of use: df_links['imdbId'] = df_links['imdbId'].apply(unformat_imdb_id)
+    return formatted_imdb_id[2:].lstrip('0')
 
 
 def extract_from_dict(string):
@@ -454,3 +467,390 @@ def plot_movies_by_country(df):
     )
 
     return fig
+
+
+def plot_language_count(df):
+    # Create the plot
+    fig = px.bar(
+        df,
+        x='language',
+        y='count',
+        title='Number of Films per Language',
+        labels={'language': 'Language', 'count': 'Count'},
+        log_y=True,  # Logarithmic scale for the y-axis
+        color='language',  # Color bars by language
+    )
+
+    # Customize the layout and make the plot larger
+    fig.update_layout(
+        width=1100,  # Set width to make the plot larger
+        height=600,  # Set height to make the plot larger
+        xaxis=dict(title='Language', tickangle=30, title_font=dict(size=14)),
+        yaxis=dict(
+            title='Count (Log Scale)',
+            title_font=dict(size=14),
+            tickfont=dict(size=14),  # Increase y-axis tick font size
+        ),
+        title_font=dict(size=18),
+        legend_title=None
+    )
+    return fig
+
+
+def plot_directors_count(df):
+    # Create the plot
+    fig = px.bar(
+        df,
+        x='director',
+        y='Occurrences',
+        title='Number of Films per Director',
+        labels={'director': 'Director', 'Occurrences': 'Occurrences'},
+        log_y=True,  # Logarithmic scale for the y-axis
+        color='director',  # Color bars by director
+    )
+
+    # Customize the layout
+    fig.update_layout(
+        width=1100,  # Set width to make the plot larger
+        height=600,  # Set height to make the plot larger
+        xaxis=dict(
+            title='Director',
+            tickangle=30,  # Rotate x-axis labels
+            title_font=dict(size=14),
+            tickfont=dict(size=10),  # Smaller tick font size for directors
+        ),
+        yaxis=dict(
+            title='Occurrences',
+            title_font=dict(size=14),
+            tickfont=dict(size=14),  # Larger y-axis tick font size
+        ),
+        title_font=dict(size=18),
+        legend_title=None,  # Remove legend title
+    )
+    return fig
+
+
+def plot_actors_count(df):
+
+    fig = px.bar(
+        df,
+        x='Actor',
+        y='Occurrences',
+        title='Number of Films per Actor',
+        labels={'Actor': 'Actor', 'Occurrences': 'Occurrences'},
+        log_y=True,  # Logarithmic scale for the y-axis
+        color='Actor',  # Color bars by actor
+    )
+
+    # Customize the layout
+    fig.update_layout(
+        width=1100,  # Set width to make the plot larger
+        height=600,  # Set height to make the plot larger
+        xaxis=dict(
+            title='Actor',
+            tickangle=30,  # Rotate x-axis labels
+            title_font=dict(size=14),
+            tickfont=dict(size=10),  # Smaller tick font size for actors
+        ),
+        yaxis=dict(
+            title='Occurrences',
+            title_font=dict(size=14),
+            tickfont=dict(size=14),  # Larger y-axis tick font size
+        ),
+        title_font=dict(size=18),
+        legend_title=None,  # Remove legend title
+    )
+
+    return fig
+
+
+def plot_year_occurences(df):
+    fig = go.Figure(data=[go.Bar(x=df.index, y=df.values)])
+
+    # Update layout for labels and title
+    fig.update_layout(
+        title='Number of movies by Year',
+        xaxis_title='Year',
+        yaxis_title='Number of movies in total',
+        xaxis=dict(tickangle=0),
+        height=600,
+        width=1000  # Rotate x-axis labels if needed
+    )
+
+    # Show the plot
+    return fig
+
+def plot_month_occurences(df):
+    month_names = [calendar.month_name[month] for month in
+                   df.index.astype(int)]  # Convert month indices to names
+
+    # Create the bar chart
+    fig = go.Figure(data=[go.Bar(
+        x=month_names,  # Use month names instead of indices
+        y=df.values,
+        text=df.values,  # Add text (values) on top of the bars
+        textposition='outside'  # Position the text outside the bars
+    )])
+
+    # Update layout for labels and title
+    fig.update_layout(
+        title='Number of Movies by Month',
+        xaxis_title='Month',
+        yaxis_title='Number of Movies in Total',
+        xaxis=dict(tickangle=-30),  # Rotate x-axis labels if necessary
+        height=600,
+        width=1000
+    )
+
+    return fig
+
+
+def plot_day_occurences(df):
+    fig = go.Figure(data=[go.Bar(x=df.index, y=df.values,
+                                 text=df.values, textposition='outside')])
+
+    # Update layout for labels and title
+    fig.update_layout(
+        title='Number of movies by Day',
+        xaxis_title='Day',
+        yaxis_title='Number of movies in total',
+        xaxis=dict(tickangle=0),
+        height=600,
+        width=1000  # Rotate x-axis labels if needed
+    )
+
+    return fig
+
+
+def value_counts_for_genre(genre_column):
+    genre_counts = {}
+    for row in genre_column:
+        if isinstance(row, str):  # Ensure the row is a string
+            for genre in row.split(","):
+                genre = genre.strip()
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+
+    # Create a DataFrame from genre counts
+    genre_counts_df = pd.DataFrame(
+        list(genre_counts.items()), columns=["Genre", "Occurrences"]
+    ).sort_values(by="Occurrences", ascending=False)
+
+    # Step 2: Select Top Genres (e.g., Top 20)
+    top_genres = genre_counts_df.iloc[:20]
+
+    return top_genres
+
+
+def plot_genre_counts(df):
+    # Step 3: Create the Plot
+    fig = px.bar(
+        df,
+        x='Genre',
+        y='Occurrences',
+        title='Number of Films per Genre (Logarithmic Scale)',
+        labels={'Genre': 'Genre', 'Occurrences': 'Occurrences'},
+        log_y=True,  # Apply logarithmic scale
+        color='Genre',  # Color bars by genre
+    )
+
+    # Step 4: Customize the Layout
+    fig.update_layout(
+        width=1100,  # Set plot width
+        height=600,  # Set plot height
+        xaxis=dict(
+            title='Genre',
+            tickangle=30,  # Rotate x-axis labels for better visibility
+            title_font=dict(size=14),
+            tickfont=dict(size=10),  # Smaller font for genres
+        ),
+        yaxis=dict(
+            title='Occurrences (Log Scale)',
+            title_font=dict(size=14),
+            tickfont=dict(size=14),  # Larger y-axis tick font size
+        ),
+        title_font=dict(size=18),
+        legend_title=None,  # Remove legend title
+    )
+
+    return fig
+
+
+def value_counts_for_keywords(keywords_column):
+    # Method 1: Using list comprehension
+    all_keywords = [word for keywords_list in keywords_column for word in keywords_list]
+
+    # Method 2: Using pandas explode
+    all_keywords_alt = keywords_column.explode().tolist()
+    # Count the frequencies of keywords
+    keyword_counts = Counter(all_keywords)
+
+    # If you want to see the most common keywords
+    most_common_keywords = keyword_counts.most_common()  # Returns list of (word, count) tuples
+    # Or if you prefer a pandas Series
+    keyword_freq_series = pd.Series(keyword_counts).sort_values(ascending=False)
+
+    return keyword_freq_series
+
+
+def plot_runtime_over_time(df):
+    # Create the line plot using Plotly
+    fig = px.line(df, x='year', y='runtime_clean',
+                  title='Average Runtime of Movies Over Time',
+                  labels={'year': 'Year', 'runtime_clean': 'Average Runtime (minutes)'})
+
+    # Update the layout for better visualization
+    fig.update_layout(
+        title_font_size=20,
+        xaxis_title_font_size=16,
+        yaxis_title_font_size=16,
+        template='plotly_white'
+    )
+
+    return fig
+
+
+# ################################ VISU RATINGS ################################
+
+def plot_hist_ratings(df):
+    # Compute the histogram using Plotly
+    mean_rating = df['rating'].mean()
+
+    fig = px.histogram(
+        df,
+        x='rating',
+        nbins=len(df['rating'].unique()),  # One bin per unique rating
+        title='Histogram of Ratings',
+        labels={'rating': 'Ratings'},
+        color_discrete_sequence=['skyblue']
+    )
+
+    # Add a vertical line for the mean rating
+    fig.add_trace(
+        go.Scatter(
+            x=[mean_rating, mean_rating],
+            y=[0, df['rating'].value_counts().max()],
+            mode='lines',
+            name=f'Mean Rating: {mean_rating:.2f}',
+            line=dict(color='red', width=2, dash='dash')
+        )
+    )
+
+    # Customize the layout
+    fig.update_layout(
+        xaxis_title='Ratings',
+        yaxis_title='Frequency',
+        bargap=0.02,  # Reduced gap for tighter bars
+        height=600,
+        width=1000,  # Increased height
+        template='plotly_white'
+    )
+
+    return fig
+
+
+def plot_most_rated_movies(df, df_names):
+    # Get the top 10 movies by the number of ratings
+    rating_counts = df['imdbId'].value_counts().head(10).reset_index()
+    rating_counts.columns = ['imdbId', 'rating_count']
+
+    # Ensure 'imdb_id' is formatted correctly for matching
+    df_names['formatted_imdb_id'] = df_names['imdb_id'].apply(unformat_imdb_id)
+
+    # Merge names and rating counts
+    names = df_names[df_names['formatted_imdb_id'].isin(rating_counts['imdbId'])][['title', 'formatted_imdb_id']]
+    merged = rating_counts.merge(
+        names,
+        left_on='imdbId',
+        right_on='formatted_imdb_id',
+        how='left'
+    )
+
+    # Replace movie IDs with titles for the x-axis
+    merged['imdbId'] = merged['title']
+
+    # Create the bar chart using Plotly
+    fig = px.bar(
+        merged,
+        x='imdbId',
+        y='rating_count',
+        title='Top 10 Movies by Number of Ratings',
+        labels={'imdbId': 'Movie Name', 'rating_count': 'Number of Ratings'},
+        color_discrete_sequence=['orange']
+    )
+
+    # Update the layout for better visualization
+    fig.update_layout(
+        title_font_size=20,
+        xaxis_title_font_size=16,
+        yaxis_title_font_size=16,
+        template='plotly_white'
+    )
+
+    return fig
+
+
+def plot_most_ratings_users(df):
+    # Get the top 10 users by number of ratings
+    user_stats = df['userId'].value_counts().head(10).reset_index()
+    user_stats.columns = ['userId', 'rating_count']
+
+    # Convert userId to a string to treat it as a categorical variable
+    user_stats['userId'] = user_stats['userId'].astype(str)
+
+    # Create the bar chart using Plotly
+    fig = px.bar(
+        user_stats,
+        x='userId',
+        y='rating_count',
+        title='Top 10 Users by Number of Ratings',
+        labels={'userId': 'User ID', 'rating_count': 'Number of Ratings'},
+        color_discrete_sequence=['red']
+    )
+
+    # Update the layout for better visualization
+    fig.update_layout(
+        title_font_size=20,
+        xaxis_title_font_size=16,
+        yaxis_title_font_size=16,
+        xaxis=dict(type='category'),  # Ensure x-axis is categorical
+        template='plotly_white'
+    )
+
+    return fig
+
+
+def plot_average_vs_number_of_ratings(df):
+    # Compute the movie statistics
+    movie_stats = df.groupby('imdbId').agg(
+        average_rating=('rating', 'mean'),
+        num_ratings=('rating', 'count')
+    ).reset_index()
+
+    # Create the scatter plot using Plotly
+    fig = px.scatter(
+        movie_stats,
+        x='num_ratings',
+        y='average_rating',
+        size_max=8,
+        opacity=0.6,
+        color_discrete_sequence=['purple'],
+        title='Average Rating vs. Number of Ratings',
+        labels={'num_ratings': 'Number of Ratings', 'average_rating': 'Average Rating'}
+    )
+
+    # Customize the axes and layout
+    fig.update_layout(
+        title_font_size=20,
+        xaxis_title_font_size=16,
+        yaxis_title_font_size=16,
+        template='plotly_white',
+        height=600,
+        width=1000
+    )
+
+    # Set x-axis to logarithmic scale
+    fig.update_xaxes(type='log')
+
+    return fig
+
+
