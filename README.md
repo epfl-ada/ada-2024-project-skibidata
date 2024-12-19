@@ -32,7 +32,7 @@ The motivation behind this project comes from the growing demand for intelligent
   
    - _Usage_:
      
-     We use the API from [IMdB](https://www.imdb.com/) to retrieve basic informations
+     The API from [IMdB](https://www.imdb.com/) is used to retrieve poster of movies for some visualization on the website. 
   
 ## Methods
 We will consider two types of recommandation system: 
@@ -47,7 +47,6 @@ We will consider two types of recommandation system:
 For each of these types of filtering we implement different recommender systems:
 - Content-based filtering:
    - Autoencoder
-   - ...
 - Collaborative filtering:
    - User-User similarity
    - Item-Item similarity
@@ -55,12 +54,15 @@ For each of these types of filtering we implement different recommender systems:
 
 The recommender systems are then compared with metrics such as RMSE or MAE when possible. Otherwise we will compare the order of recommendations with the actual ratings given by a user.  
 
+## Data Story 
+The data story can be found [here](https://ada.wuhrmann.art/). Don't hesitate to play with the demo and to come back to us if you have any questions. Our contact informations are at the end of the data story.  
+
 ## Contribution of each member to the project
-- _Vincent_ : collaborative filtering
-- _Mayeul_ : some visualization
-- _Arthur_ : the final website that will integrate our different recommendation systems
-- _Alex_ : content-based filtering
-- _Corentin_ : finishing the cleaning and exploratory data analysis as well as working on the hybrid recommendation system
+- _Vincent_ : 
+- _Mayeul_ : 
+- _Arthur_ : 
+- _Alex_ : 
+- _Corentin_ : 
   
 ## Organization of the Github
 Our Github is organized as follows:
@@ -69,9 +71,11 @@ Our Github is organized as follows:
 - `collaborative.py` python file containing all functions needed for the collaborative filtering based recommender systems.
 - `content_based.py` python file containing all functions needed for the content-based filtering based recommender systems.
 - `Draft` folder containing files used to store experimental concepts and test scripts. Nothing relevant for P2 deliverable can be found in this folder. 
-- `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook. 
+- `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook.
+- `Visualization` folder contains the visualization made either in _html_ or in _png_
+- `Weights` folder contains saved weights of our different models such that they can be used without retraining.
 - `README.md`
-- `requirements.txt` text file specifying the necessary libraries to run the results noetbook. 
+- `requirements.txt` text file specifying the necessary libraries to run the results notebook. 
 - `gitignore` configuration file used to specify files and directories that should be ignored by Git.
   
 In order to run the current `results.ipynb` notebook you need to download the dataset presented above from [Kaggle](https://www.kaggle.com/datasets/rounakbanik/the-movies-dataset) and store it in a folder called _Data/TMdB/_ as well as download the [CMU Movie Summary Corpus Dataset](http://www.cs.cmu.edu/~ark/personas/) and store it in _Data/MovieSummaries/_.
