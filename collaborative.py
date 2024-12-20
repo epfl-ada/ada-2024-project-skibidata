@@ -969,7 +969,7 @@ class SparseSVDRecommender:
 
         # Optional: exclude already rated movies
         if exclude_rated:
-            rated_movies = set(df_filtered[df_filtered['sparse_user_id'] == user_id]['sparse_movie_id'])
+            rated_movies = set(df_ratings[df_ratings['sparse_user_id'] == user_id]['sparse_movie_id'])
             predictions = [rec for rec in predictions if rec[0] not in rated_movies]
 
         return predictions
@@ -992,6 +992,7 @@ class SparseSVDRecommender:
         def transform_rating(predicted_rating, min_rating, max_rating):
             range_width = max_rating - min_rating
             return min_rating + range_width / (1 + np.exp(-predicted_rating))
+
         # Check if model is trained
         if self.user_factors is None:
             raise ValueError("Model must be trained first")

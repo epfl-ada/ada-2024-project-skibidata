@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset
 import numpy as np
+import pandas as pd
 import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -318,3 +319,70 @@ if __name__ == '__main__':
             np.save(f'{args.output_dir}/final_encodings.npy', epoch_encodings.cpu().numpy())
 
     print("Training completed. Results saved in:", args.output_dir)
+
+
+# ##################### From Notebooks #####################
+def one_hot_encode(df, column_name, prefix, keeponly=100):
+    all_cat = {}
+    for cat in df[column_name]:
+
+        if isinstance(cat, str):
+            cat = [el.strip() for el in cat.split(',')]
+
+        if not isinstance(cat, list):
+            continue
+        for el in cat:
+            if el not in all_cat:
+                all_cat[el] = 0
+            all_cat[el] += 1
+
+    sorted_cat = {k: v for k, v in sorted(all_cat.items(), reverse=True, key=lambda item: item[1])}
+
+    all_cat = {v[0]: v[1] for v in (list(sorted_cat.items())[:keeponly])}
+
+    print(f' The dataframe has {len(all_cat)} different categories of {column_name}. Let\' one hot encode !')
+    columns = []
+
+    for cat in all_cat:
+        columns.append(pd.DataFrame(
+            {f'{prefix}_{cat}': df[column_name].apply(lambda x: 1 if (not isinstance(x, float) and cat in x) else 0)}))
+
+    return all_cat, pd.concat([df, *columns], axis=1)
+
+
+def normalize_without_nan(df, column_name, nan_val=None, clip=None):
+    mask = df[column_name].isna()
+    if nan_val is not None:
+        mask = mask | (df[column_name] == nan_val)
+    mask = ~mask
+
+    col = df.loc[mask, column_name]
+
+    if clip is not None:
+        col = np.clip(col, np.mean(col) - clip * np.std(col), np.mean(col) + clip * np.std(col))
+
+    df.loc[mask, column_name] = (col - col.mean()) / col.std()
+
+    df.fillna({column_name: 0}, inplace=True)
+
+    return df[column_name]
+
+
+def analyze_encodings(encodings):
+    """Analyze encoding statistics"""
+    with torch.no_grad():
+        # Move to CPU for analysis
+        encodings_cpu = encodings.cpu()
+
+        # Calculate sparsity ratio (proportion of near-zero values)
+        sparsity_threshold = 1e-3
+        sparsity_ratio = (torch.abs(encodings_cpu) < sparsity_threshold).float().mean().item()
+
+        # Calculate average activation
+        avg_activation = torch.mean(torch.abs(encodings_cpu)).item()
+
+        # Calculate standard deviation across features
+        encoding_std = torch.std(encodings_cpu, dim=0).mean().item()
+
+        return sparsity_ratio, avg_activation, encoding_std
+
