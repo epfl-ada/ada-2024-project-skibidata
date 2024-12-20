@@ -150,8 +150,7 @@ def reco_user_based_test_set(test, df_ratings, weights_dict, indices_dict, selec
     movie_users = test_selected_user.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
     movie_users2 = test.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
 
-    print(movie_users2)
-    print(movie_users)
+
     # Precompute user mean and std ratings for each user's own ratings
     user_mean_ratings = df_ratings.groupby('sparse_user_id')['rating'].mean()
     user_std_ratings = df_ratings.groupby('sparse_user_id')['rating'].std().fillna(1)
@@ -474,7 +473,8 @@ def reco_item_based_test_set(test, train, weights_dict, indices_dict, selected_m
     results = {movie: {} for movie in selected_movies}
 
     for i, movie in enumerate(selected_movies):
-        print(f"movie {i}/{len(selected_movies)}")
+        if i % 100 == 0:
+            print(f"movie {i}/{len(selected_movies)}")
         # Compute user's own mean rating
         movie_ratings_subset = test[test['sparse_movie_id'] == movie]
         r_u = movie_ratings_subset['rating'].mean()
@@ -489,7 +489,6 @@ def reco_item_based_test_set(test, train, weights_dict, indices_dict, selected_m
         movie_results_z_normalization = []
         movie_results_basic = []
 
-        print(len(movie_users))
         if len(movie_users) > max_number_of_users:
             movie_users = np.random.choice(movie_users, size=max_number_of_users, replace=False)
         for user in movie_users:
