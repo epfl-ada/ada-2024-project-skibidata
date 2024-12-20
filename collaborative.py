@@ -12,16 +12,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 
-def format_imdb_id(imdb_id):
-    # example of use: df_links['imdbId'] = df_links['imdbId'].apply(format_imdb_id)
-    return 'tt' + str(imdb_id).zfill(7)
-
-
-def unformat_imdb_id(formatted_imdb_id):
-    # example of use: df_links['imdbId'] = df_links['imdbId'].apply(unformat_imdb_id)
-    return formatted_imdb_id[2:].lstrip('0')
-
-
 def filter_ratings_dataframe(df, k):
     """
     Function that remove users and movies with less than k ratings
@@ -99,86 +89,9 @@ def split_into_train_and_test(df, test_size=0.2, random_state=42):
 
 
 ################################ Neighbordhood-based Methods ################################
-def optimize_recommendation_calculation(test, df_ratings, weights, indices, num_users=100, k=30):
-    np.random.seed(42)
-    unique_users = test['sparse_user_id'].unique()
-    selected_users = np.random.choice(unique_users, size=num_users, replace=False)
-
-    # Create weights map once
-    weights_map = dict(zip(indices, weights))
-
-    # Precompute movie-user mapping
-    movie_users = test.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
-
-    # Precompute user mean and std ratings for each user's own ratings
-    user_mean_ratings = df_ratings.groupby('sparse_user_id')['rating'].mean()
-    user_std_ratings = df_ratings.groupby('sparse_user_id')['rating'].std().fillna(1)
-
-    results = {user: {} for user in selected_users}
-
-    for user in selected_users:
-        # Compute user's own mean and std of ratings
-        user_ratings_subset = df_ratings[df_ratings['sparse_user_id'] == user]
-        r_u = user_ratings_subset['rating'].mean()
-        std_u = user_ratings_subset['rating'].std()
-
-        user_movies = test[test['sparse_user_id'] == user]['sparse_movie_id'].values
-        user_results_mean_centering = []
-        user_results_z_normalization = []
-        user_results_basic = []
-
-        for movie in user_movies:
-            # Get top K weighted users for this movie
-            movie_users_list = movie_users.get(movie, [])
-            top_users = heapq.nlargest(
-                k,
-                [(uid, weights_map.get(uid, 0)) for uid in movie_users_list if weights_map.get(uid, 0) > 0],
-                key=lambda x: x[1]
-            )
-
-            # Filter ratings for top users
-            user_ratings = df_ratings[
-                (df_ratings['sparse_movie_id'] == movie) &
-                (df_ratings['sparse_user_id'].isin([u[0] for u in top_users]))
-                ].copy()
-
-            if len(user_ratings) == 0:
-                continue
-
-            # Add columns using .loc to avoid warnings
-            user_ratings.loc[:, 'user_weight'] = user_ratings['sparse_user_id'].map(dict(top_users))
-            user_ratings.loc[:, 'mean_rating'] = user_ratings['sparse_user_id'].map(user_mean_ratings)
-            user_ratings.loc[:, 'std_rating'] = user_ratings['sparse_user_id'].map(user_std_ratings)
-            user_ratings.loc[:, 'weighted_diff'] = user_ratings['user_weight'] * (
-                    user_ratings['rating'] - user_ratings['mean_rating'])
-
-            numerator = user_ratings['weighted_diff'].sum()
-            denominator = user_ratings['user_weight'].abs().sum()
-            numerator2 = (user_ratings['weighted_diff'] / user_ratings['std_rating']).sum()
-            numerator3 = (user_ratings['user_weight'] * user_ratings['rating']).sum()
-            # print("Numerator\n:", numerator)
-            # print("Numerator2\n:", numerator2)
-            # print("Numerator3\n:", numerator3)
-
-            if denominator > 0:
-                result = numerator / denominator + r_u
-                result2 = numerator2 * std_u / denominator + r_u
-                result3 = numerator3 / denominator
-
-                user_results_mean_centering.append((movie, result))
-                user_results_z_normalization.append((movie, result2))
-                user_results_basic.append((movie, result3))
-
-        results[user]['basic'] = user_results_basic
-        results[user]['mean_centering'] = user_results_mean_centering
-        results[user]['z_normalization'] = user_results_z_normalization
-
-    return results
-
-
 # ############################ User-Based Collaborative Filtering ##############################
 # To evaluate over the test set
-def compute_user_weights_and_indices2(test_set, ratings_matrix_test, knn, n_neighbors=None, n_users=100):
+def compute_user_weights_and_indices(test_set, ratings_matrix_test, knn, n_neighbors=None, n_users=100):
 
     if n_neighbors is None:
         n_neighbors = ratings_matrix_test.shape[0]
@@ -232,11 +145,14 @@ def compute_user_weights_and_indices2(test_set, ratings_matrix_test, knn, n_neig
 
 
 def reco_user_based_test_set(test, df_ratings, weights_dict, indices_dict, selected_users, k=30):
-    unique_users = test['sparse_user_id'].unique()
+    test_selected_user = test[test['sparse_user_id'].isin(selected_users)]
 
     # Precompute movie-user mapping
-    movie_users = test.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
+    movie_users = test_selected_user.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
+    movie_users2 = test.groupby('sparse_movie_id')['sparse_user_id'].agg(list)
 
+    print(movie_users2)
+    print(movie_users)
     # Precompute user mean and std ratings for each user's own ratings
     user_mean_ratings = df_ratings.groupby('sparse_user_id')['rating'].mean()
     user_std_ratings = df_ratings.groupby('sparse_user_id')['rating'].std().fillna(1)
@@ -312,7 +228,7 @@ def reco_user_based_test_set(test, df_ratings, weights_dict, indices_dict, selec
     return results
 
 
-def add_predicted_ratings(results, selected_users_df):
+def add_predicted_ratings_for_users(results, selected_users_df):
     # Create a copy of the DataFrame to avoid modifying the original
     df = selected_users_df.copy()
 
@@ -365,6 +281,7 @@ def plot_predicted_ratings_distribution(df):
         plt.title(f'{method.replace("_", " ").title()} Error Distribution')
         plt.xlabel('Absolute Error')
         plt.ylabel('Frequency')
+        plt.xlim(0, 5)
 
     plt.tight_layout()
     plt.show()
@@ -541,87 +458,90 @@ def compute_movie_weights_and_indices(test, ratings_matrix_test, knn, n_neighbor
     return weights_dict, indices_dict, selected_movies
 
 
-def reco_item_based_test_set(test, df_ratings, weights_dict, indices_dict, selected_movies, k=30):
-    def optimize_recommendation_calculation_movies():
-        unique_movies = test['sparse_movie_id'].unique()
-        # Precompute user-movie mapping
-        user_movies = test.groupby('sparse_user_id')['sparse_movie_id'].agg(list)
+def reco_item_based_test_set(test, train, weights_dict, indices_dict, selected_movies, max_number_of_users=1000,
+                             k=30):
+    test_selected_movies = test[test['sparse_movie_id'].isin(selected_movies)]
 
-        # Precompute movie mean and std ratings for each movie's own ratings
-        movie_mean_ratings = df_ratings.groupby('sparse_movie_id')['rating'].mean()
-        movie_std_ratings = df_ratings.groupby('sparse_movie_id')['rating'].std().fillna(1)
+    user_movies = test.groupby('sparse_user_id')['sparse_movie_id'].agg(list)
 
-        # Precompute user mean ratings
-        user_mean_ratings = df_ratings.groupby('sparse_user_id')['rating'].mean()
-        global_mean = df_ratings['rating'].mean()
+    # Precompute movie mean and std ratings for each movie's own ratings
+    movie_mean_ratings = train.groupby('sparse_movie_id')['rating'].mean()
+    movie_std_ratings = train.groupby('sparse_movie_id')['rating'].std().fillna(1)
 
-        results = {movie: {} for movie in selected_movies}
+    # Precompute user mean ratings
+    #user_mean_ratings = df_ratings.groupby('sparse_user_id')['rating'].mean()
+    global_mean = train['rating'].mean()
 
-        for i, movie in enumerate(selected_movies):
-            print(f"movie {i}/{len(selected_movies)}")
-            # Compute user's own mean rating
-            movie_ratings_subset = df_ratings[df_ratings['sparse_movie_id'] == movie]
-            r_u = movie_ratings_subset['rating'].mean()
-            std_u = movie_ratings_subset['rating'].std()
+    results = {movie: {} for movie in selected_movies}
 
-            weights_map = dict(zip(indices_dict.get(movie, []), weights_dict.get(movie, [])))
+    for i, movie in enumerate(selected_movies):
+        print(f"movie {i}/{len(selected_movies)}")
+        # Compute user's own mean rating
+        movie_ratings_subset = test[test['sparse_movie_id'] == movie]
+        r_u = movie_ratings_subset['rating'].mean()
+        a = movie_ratings_subset['rating'].std()
+        std_u = a if a > 0 else 1
 
-            movie_users = test[test['sparse_movie_id'] == movie]['sparse_user_id'].values
+        weights_map = dict(zip(indices_dict.get(movie, []), weights_dict.get(movie, [])))
 
-            movie_results_mean_centering = []
-            movie_results_z_normalization = []
-            movie_results_basic = []
+        movie_users = test[test['sparse_movie_id'] == movie]['sparse_user_id'].values
 
-            print(len(movie_users))
-            for user in movie_users:
-                user_movies_list = user_movies.get(user, [])
+        movie_results_mean_centering = []
+        movie_results_z_normalization = []
+        movie_results_basic = []
 
-                # Select top K users efficiently
-                top_movies = heapq.nlargest(
-                    k,
-                    [(uid, weights_map.get(uid, 0)) for uid in user_movies_list if weights_map.get(uid, 0) > 0],
-                    key=lambda x: x[1]
-                )
+        print(len(movie_users))
+        if len(movie_users) > max_number_of_users:
+            movie_users = np.random.choice(movie_users, size=max_number_of_users, replace=False)
+        for user in movie_users:
+            user_movies_list = user_movies.get(user, [])
 
-                # Filter ratings for top users
-                movie_ratings = df_ratings[
-                    (df_ratings['sparse_user_id'] == user) &
-                    (df_ratings['sparse_movie_id'].isin([u[0] for u in top_movies]))
-                    ].copy()
+            # Select top K users efficiently
+            top_movies = heapq.nlargest(
+                k,
+                [(uid, weights_map.get(uid, 0)) for uid in user_movies_list if weights_map.get(uid, 0) > 0],
+                key=lambda x: x[1]
+            )
 
-                if len(movie_ratings) < 5:
-                    movie_results_mean_centering.append((user, global_mean))
-                    movie_results_z_normalization.append((user, global_mean))
-                    movie_results_basic.append((user, global_mean))
-                    continue
+            # Filter ratings for top users
+            movie_ratings = test[
+                (test['sparse_user_id'] == user) &
+                (test['sparse_movie_id'].isin([u[0] for u in top_movies]))
+                ].copy()
 
-                # Add columns using .loc to avoid warnings
-                movie_ratings.loc[:, 'movie_weight'] = movie_ratings['sparse_movie_id'].map(dict(top_movies))
-                movie_ratings.loc[:, 'mean_rating'] = movie_ratings['sparse_movie_id'].map(movie_mean_ratings)
-                movie_ratings.loc[:, 'std_rating'] = movie_ratings['sparse_movie_id'].map(movie_std_ratings)
-                movie_ratings.loc[:, 'weighted_diff'] = movie_ratings['movie_weight'] * (
-                            movie_ratings['rating'] - movie_ratings['mean_rating'])
+            if len(movie_ratings) < 5:
+                movie_results_mean_centering.append((user, global_mean))
+                movie_results_z_normalization.append((user, global_mean))
+                movie_results_basic.append((user, global_mean))
+                continue
 
-                numerator = movie_ratings['weighted_diff'].sum()
-                denominator = movie_ratings['movie_weight'].abs().sum()
+            # Add columns using .loc to avoid warnings
+            movie_ratings.loc[:, 'movie_weight'] = movie_ratings['sparse_movie_id'].map(dict(top_movies))
+            movie_ratings.loc[:, 'mean_rating'] = movie_ratings['sparse_movie_id'].map(movie_mean_ratings)
+            movie_ratings.loc[:, 'std_rating'] = movie_ratings['sparse_movie_id'].map(movie_std_ratings)
+            movie_ratings.loc[:, 'weighted_diff'] = movie_ratings['movie_weight'] * (
+                        movie_ratings['rating'] - movie_ratings['mean_rating'])
+            movie_ratings.loc[:, 'std_rating'] = movie_ratings['std_rating'].replace(0, 1)
+            numerator = movie_ratings['weighted_diff'].sum()
+            denominator = movie_ratings['movie_weight'].abs().sum()
 
-                numerator2 = (movie_ratings['weighted_diff'] / movie_ratings['std_rating']).sum()
-                numerator3 = (movie_ratings['movie_weight'] * movie_ratings['rating']).sum()
+            numerator2 = (movie_ratings['weighted_diff'] / movie_ratings['std_rating']).sum()
+            numerator3 = (movie_ratings['movie_weight'] * movie_ratings['rating']).sum()
 
-                if denominator > 0:
-                    result = numerator / denominator + r_u
-                    result2 = numerator2 * std_u / denominator + r_u
-                    result3 = numerator3 / denominator
+            if denominator > 0:
+                result = numerator / denominator + r_u
+                result2 = numerator2 * std_u / denominator + r_u
+                result3 = numerator3 / denominator
 
-                    movie_results_mean_centering.append((user, result))
-                    movie_results_z_normalization.append((user, result2))
-                    movie_results_basic.append((user, result3))
+                movie_results_mean_centering.append((user, result))
+                movie_results_z_normalization.append((user, result2))
+                movie_results_basic.append((user, result3))
 
-            results[movie]['basic'] = movie_results_basic
-            results[movie]['mean_centering'] = movie_results_mean_centering
-            results[movie]['z_normalization'] = movie_results_z_normalization
+        results[movie]['basic'] = movie_results_basic
+        results[movie]['mean_centering'] = movie_results_mean_centering
+        results[movie]['z_normalization'] = movie_results_z_normalization
 
-        return results
+    return results
 
 
 def reco_item_based_new_user(ratings_new_user, movie_map, knn, means_by_movie, std_by_movie,
@@ -678,6 +598,7 @@ def reco_item_based_new_user(ratings_new_user, movie_map, knn, means_by_movie, s
 
     print(f"Optimal threshold: {optimal_threshold}, number of movies: {num_indices}")
 
+    recommendation_basic = {}
     recommendation_mean = {}
     recommendation_z = {}
 
@@ -703,15 +624,64 @@ def reco_item_based_new_user(ratings_new_user, movie_map, knn, means_by_movie, s
         predicted_rating = mean_movie_to_predict + np.dot(ratings_to_take - means, weights_to_take) / sum_of_weights
         predicted_rating2 = mean_movie_to_predict + std_movie_to_predict * np.dot((ratings_to_take - means) / stds,
                                                                                   weights_to_take) / sum_of_weights
+        predicted_rating3 = np.dot(ratings_to_take, weights_to_take) / sum_of_weights
 
+        recommendation_basic[movie] = predicted_rating3
         recommendation_mean[movie] = predicted_rating
         recommendation_z[movie] = predicted_rating2
 
+    sorted_basic = sorted(recommendation_basic.items(), key=lambda item: item[1], reverse=True)[:number_of_reco]
     sorted_mean = sorted(recommendation_mean.items(), key=lambda item: item[1], reverse=True)[:number_of_reco]
     sorted_z = sorted(recommendation_z.items(), key=lambda item: item[1], reverse=True)[:number_of_reco]
     print(f"Total time taken: {time.time() - start}")
 
-    return sorted_mean, sorted_z
+    return sorted_basic, sorted_mean, sorted_z
+
+
+def add_predicted_ratings_for_movies(results, selected_movies_df):
+    # Create a copy of the DataFrame to avoid modifying the original
+    df = selected_movies_df.copy()
+
+    # Create prediction lookup dictionaries for each method
+    prediction_lookups = {
+        'basic': {},
+        'mean_centering': {},
+        'z_normalization': {}
+    }
+
+    for movie, method_results in results.items():
+        for method, user_ratings in method_results.items():
+            # Convert list of tuples to dictionary
+            prediction_lookups[method][movie] = dict(user_ratings)
+
+    # Vectorized prediction function for each method
+    def get_predicted_rating(movie, user, method):
+        # Use .get() with a default of np.nan to handle missing predictions
+        return prediction_lookups[method].get(movie, {}).get(user, np.nan)
+
+    # Add predicted ratings for each method
+    for method in ['basic', 'mean_centering', 'z_normalization']:
+        # Add predicted rating column
+        df[f'predicted_rating_{method}'] = df.apply(
+            lambda row: get_predicted_rating(row['sparse_movie_id'], row['sparse_user_id'], method),
+            axis=1
+        )
+
+        # Add error column for each method
+        df[f'rating_error_{method}'] = np.abs(df['rating'] - df[f'predicted_rating_{method}'])
+        df[f'rating_error_squared_{method}'] = (df['rating'] - df[f'predicted_rating_{method}']) ** 2
+
+
+    # Drop rows with no predictions across all methods
+    df_with_predictions = df.dropna(
+        subset=[
+            'predicted_rating_basic',
+            'predicted_rating_mean_centering',
+            'predicted_rating_z_normalization'
+        ]
+    )
+
+    return df_with_predictions
 
 
 # ############################ Dimensionality Reduction Methods ##############################
@@ -1074,3 +1044,36 @@ class SparseSVDRecommender:
         recommendations = [rec for rec in recommendations if rec[0] not in rated_movies]
 
         return recommendations[:n_items]
+
+
+# Helper function to train and save model
+def train_and_save_model(recommender, train_matrix, test_matrix, model_path):
+    # Fit the model
+    recommender.fit(
+        ratings_matrix_train=train_matrix,
+    )
+
+    # Evaluate the model
+    metrics, actual_ratings, predictions = recommender.evaluate(ratings_matrix_test)
+
+    # Save the model
+    recommender.save_model(model_path)
+
+    # Demonstrate recommendations for a specific user
+    print("\n--- Sample Recommendations ---")
+    # Pick a random user from the original dataset
+    sample_user = df_ratings['sparse_user_id'].sample(1).values[0]
+
+    # Prepare sample user ratings for new user recommendation
+    sample_user_ratings = train[train['sparse_user_id'] == sample_user][['sparse_movie_id', 'rating']].copy()
+
+    # Get recommendations
+    recommendations = recommender.handle_new_user(
+        sample_user_ratings,
+        n_items=100
+    )
+
+    print(f"Recommendations for User {sample_user}:")
+    print(len(recommendations))
+    for movie_id, score in recommendations[:10]:
+        print(f"Movie ID: {movie_id}, Predicted Rating: {score:.2f}")

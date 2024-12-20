@@ -6,12 +6,9 @@ import pandas as pd
 import calendar
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-import  plotly.express as px
+import plotly.express as px
 from SPARQLWrapper import SPARQLWrapper, JSON
 from collections import Counter
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 """
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
