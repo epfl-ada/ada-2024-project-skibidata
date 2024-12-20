@@ -92,7 +92,6 @@ def split_into_train_and_test(df, test_size=0.2, random_state=42):
 # ############################ User-Based Collaborative Filtering ##############################
 # To evaluate over the test set
 def compute_user_weights_and_indices(test_set, ratings_matrix_test, knn, n_neighbors=None, n_users=100):
-
     if n_neighbors is None:
         n_neighbors = ratings_matrix_test.shape[0]
 
@@ -176,7 +175,7 @@ def reco_user_based_test_set(test, df_ratings, weights_dict, indices_dict, selec
         user_results_basic = []
 
         if i % 100 == 0:
-            print(f"User {i+1}/{len(selected_users)}")
+            print(f"User {i + 1}/{len(selected_users)}")
             print(f"Computing ratings with {len(user_movies)} movies for this user")
 
         for movie in user_movies:
@@ -204,7 +203,7 @@ def reco_user_based_test_set(test, df_ratings, weights_dict, indices_dict, selec
             user_ratings.loc[:, 'mean_rating'] = user_ratings['sparse_user_id'].map(user_mean_ratings)
             user_ratings.loc[:, 'std_rating'] = user_ratings['sparse_user_id'].map(user_std_ratings)
             user_ratings.loc[:, 'weighted_diff'] = user_ratings['user_weight'] * (
-                        user_ratings['rating'] - user_ratings['mean_rating'])
+                    user_ratings['rating'] - user_ratings['mean_rating'])
 
             numerator = user_ratings['weighted_diff'].sum()
             denominator = user_ratings['user_weight'].abs().sum()
@@ -520,7 +519,7 @@ def reco_item_based_test_set(test, train, weights_dict, indices_dict, selected_m
             movie_ratings.loc[:, 'mean_rating'] = movie_ratings['sparse_movie_id'].map(movie_mean_ratings)
             movie_ratings.loc[:, 'std_rating'] = movie_ratings['sparse_movie_id'].map(movie_std_ratings)
             movie_ratings.loc[:, 'weighted_diff'] = movie_ratings['movie_weight'] * (
-                        movie_ratings['rating'] - movie_ratings['mean_rating'])
+                    movie_ratings['rating'] - movie_ratings['mean_rating'])
             movie_ratings.loc[:, 'std_rating'] = movie_ratings['std_rating'].replace(0, 1)
             numerator = movie_ratings['weighted_diff'].sum()
             denominator = movie_ratings['movie_weight'].abs().sum()
@@ -670,7 +669,6 @@ def add_predicted_ratings_for_movies(results, selected_movies_df):
         # Add error column for each method
         df[f'rating_error_{method}'] = np.abs(df['rating'] - df[f'predicted_rating_{method}'])
         df[f'rating_error_squared_{method}'] = (df['rating'] - df[f'predicted_rating_{method}']) ** 2
-
 
     # Drop rows with no predictions across all methods
     df_with_predictions = df.dropna(
@@ -987,6 +985,13 @@ class SparseSVDRecommender:
         Returns:
             List of recommended movie IDs
         """
+
+        def normalize_rating(predicted_rating, min_pred, max_pred, min_rating, max_rating):
+            return min_rating + (predicted_rating - min_pred) * (max_rating - min_rating) / (max_pred - min_pred)
+
+        def transform_rating(predicted_rating, min_rating, max_rating):
+            range_width = max_rating - min_rating
+            return min_rating + range_width / (1 + np.exp(-predicted_rating))
         # Check if model is trained
         if self.user_factors is None:
             raise ValueError("Model must be trained first")
@@ -1032,6 +1037,9 @@ class SparseSVDRecommender:
                        new_user_bias +
                        new_user_factors @ self.item_factors.T)
 
+        if np.max(predictions) > 5:
+            predictions = normalize_rating(predictions, np.min(predictions), np.max(predictions), 0.5, 5)
+
         # Create and sort recommendations
         recommendations = [
             (self.reverse_movie_id_map[idx], pred)
@@ -1047,10 +1055,11 @@ class SparseSVDRecommender:
 
 
 # Helper function to train and save model
-def train_and_save_model(recommender, train_matrix, test_matrix, model_path):
+def train_and_save_model(recommender, ratings_matrix_train, ratings_matrix_test, train,
+                         df_ratings, model_path, n_items=100):
     # Fit the model
     recommender.fit(
-        ratings_matrix_train=train_matrix,
+        ratings_matrix_train=ratings_matrix_train,
     )
 
     # Evaluate the model
@@ -1070,10 +1079,69 @@ def train_and_save_model(recommender, train_matrix, test_matrix, model_path):
     # Get recommendations
     recommendations = recommender.handle_new_user(
         sample_user_ratings,
-        n_items=100
+        n_items=n_items
     )
 
-    print(f"Recommendations for User {sample_user}:")
-    print(len(recommendations))
-    for movie_id, score in recommendations[:10]:
-        print(f"Movie ID: {movie_id}, Predicted Rating: {score:.2f}")
+    return recommendations
+
+
+def run_svd_recommender_example(ratings_matrix_train, ratings_matrix_test, train, df_ratings, new_model=True,
+                                n_factors=1000, learning_rate=0.01, regularization=0.02, n_epochs=10,
+                                filename='Weights/SVD_weights.joblib'):
+    # Model file path
+    MODEL_PATH = filename
+
+    # Initialize recommender
+    recommender = SparseSVDRecommender(
+        n_factors=n_factors,  # Number of latent factors
+        learning_rate=learning_rate,
+        regularization=regularization,
+        n_epochs=n_epochs
+    )
+
+    # Check if model exists
+    if new_model:
+        print("\n--- No Existing Model Found. Training New Model ---")
+        # Train and save new model
+        train_and_save_model(recommender, ratings_matrix_train, ratings_matrix_test, train,
+                             df_ratings, MODEL_PATH, n_items=100)
+    else:
+        if os.path.exists(MODEL_PATH):
+            print("\n--- Loading Existing Model ---")
+            loaded_recommender = recommender.load_model(MODEL_PATH)
+
+            if loaded_recommender is not None:
+                # Use loaded model for evaluation and recommendations
+                print("Existing model loaded successfully!")
+
+                # Evaluate the loaded model
+                metrics, actual_ratings, predictions = loaded_recommender.evaluate(ratings_matrix_test)
+
+                # Demonstrate recommendations for a specific user
+                print("\n--- Sample Recommendations ---")
+                # Pick a random user from the original dataset
+                sample_user = df_ratings['sparse_user_id'].sample(1).values[0]
+
+                # Prepare sample user ratings for new user recommendation
+                sample_user_ratings = train[train['sparse_user_id'] == sample_user][
+                    ['sparse_movie_id', 'rating']].copy()
+
+                # Get recommendations
+                recommendations = loaded_recommender.handle_new_user(
+                    sample_user_ratings,
+                    n_items=100
+                )
+
+                print(f"Recommendations for User {sample_user}:")
+                for movie_id, score in recommendations:
+                    print(f"Movie ID: {movie_id}, Predicted Rating: {score:.2f}")
+
+                return recommendations
+
+            else:
+                print("Failed to load existing model. Training new model.")
+                # Proceed with training new model
+                train_and_save_model(recommender, ratings_matrix_train, ratings_matrix_test, train,
+                                     df_ratings, MODEL_PATH, n_items=100)
+
+
