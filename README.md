@@ -58,11 +58,11 @@ The recommender systems are then compared with metrics such as RMSE or MAE when 
 The data story can be found [here](https://ada.wuhrmann.art/). Don't hesitate to play with the demo and to come back to us if you have any questions. Our contact informations are at the end of the data story.  
 
 ## Contribution of each member to the project
-- _Vincent_ : 
-- _Mayeul_ : 
-- _Arthur_ : 
-- _Alex_ : 
-- _Corentin_ : 
+- _Vincent_ : Worked on a first version of the knn user-based implementation, realized some visualizations (Sunburst diagram) and worked on data processing. 
+- _Mayeul_ : Worked on visualizations, tried user clustering approaches, preliminary data analysis and ideas.
+- _Arthur_ : content-based filtering + Worked on the website and implementations of the visualizations with interactions / formatting
+- _Alex_ : Tried other algorithms (NN and matrix factorization) for recommendation, participated in the writing and did some UX / in what should the plot be interactive.
+- _Corentin_ : Implemented SVD, refined knn user-based and added knn item-based, worked on the writing and the notebook visualizations
   
 ## Organization of the Github
 Our Github is organized as follows:
