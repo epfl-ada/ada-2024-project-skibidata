@@ -386,3 +386,45 @@ def analyze_encodings(encodings):
 
         return sparsity_ratio, avg_activation, encoding_std
 
+
+def interpret_features(model, X_tensor, df, feature_names, neuron=None):
+    """
+    Calculates the top movies and features correlated with each neuron from the embedding space.
+    Allows to interpret the features, see the website visualization.
+    """
+    with torch.no_grad():
+        # Get encodings
+        encodings, _ = model(X_tensor)
+
+        if not isinstance(neuron, list):
+            neuron = range(encodings.shape[1])
+
+        neurons_list = []
+
+        # For each neuron in the encoding
+        for neuron_idx in neuron:
+
+            # Get movies that activate this neuron the most
+            activation = encodings[:, neuron_idx]
+            top_movies = activation.argsort(descending=True)[:5]
+
+            correlations = []
+            for i, feature in enumerate(feature_names):
+                corr = torch.corrcoef(
+                    torch.stack([activation, X_tensor[:, i]])
+                )[0, 1].item()
+                correlations.append((feature, corr))
+
+            neurons_list.append([top_movies, correlations])
+
+    return neurons_list
+
+
+def get_genre(s):
+    # Returns the first genre that the movie has. If many of them are in the list, the first is
+    # chosen only, so be careful.
+    keywords = ['Family', 'Thriller', 'Action', 'Short Film', 'Black-and-white', 'Comedy', 'Romance Film', 'Drama']
+    for word in keywords:
+        if word in s:
+            return word
+
