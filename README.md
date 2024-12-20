@@ -1,11 +1,11 @@
 # A Movie Recommendation System
 ## Abstract
-Recommendation systems are everywhere in today's digital world, enhancing user experiences across streaming platforms, e-commerce websites, and social media. This project aims to develop a movie recommendation system using a publicly available movie dataset. The goal is to analyse user preferences, movie genres, and ratings to predict and suggest films that align with a user's unique tastes. By employing techniques such as collaborative filtering, content-based filtering, and hybrid approaches, the system will provide personalized movie recommendations.
+Recommendation systems are everywhere in today's digital world, enhancing user experiences across streaming platforms, e-commerce websites, and social media. This project aims to develop a movie recommendation system using a publicly available movie dataset. The goal is to analyse user preferences, movie genres, and ratings to predict and suggest films that align with a user's unique tastes. By employing techniques such as collaborative filtering and content-based filtering, the system will provide personalized movie recommendations. Hybrid systems will also be introduced.
 
 The motivation behind this project comes from the growing demand for intelligent systems that can navigate vast amounts of content, ensuring users find what they love. Additionally, this project showcases the power of data-driven decision-making and machine learning in solving real-world problems, with potential applications in entertainment and beyond.
 
 ## Research Questions
-1. How effectively can collaborative filtering and content-based filtering predict user preferences in movie recommendations ?
+1. How can collaborative filtering and content-based filtering effectively predict user preferences in movie recommendations ?
    - 1.1 What are the most important features when trying to cluster movies by similarities ?
    - 1.2 Similarly, how to find users with the same preferences ?
    - 1.3 How to compare the results obtained by different recommendation systems ?
