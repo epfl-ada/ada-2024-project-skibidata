@@ -67,13 +67,16 @@ The data story can be found [here](https://ada.wuhrmann.art/). Don't hesitate to
 ## Organization of the Github
 Our Github is organized as follows:
 - `results.ipynb` notebook that integrates all steps of the project, including data preprocessing, exploratory data analysis and some vizualization, feature engineering, and first model building.
+  
 - `helpers.py` python file containing all functions needed for visualization and cleaning.
 - `collaborative.py` python file containing all functions needed for the collaborative filtering based recommender systems.
 - `content_based.py` python file containing all functions needed for the content-based filtering based recommender systems.
+  
 - `Draft` folder containing files used to store experimental concepts and test scripts. Nothing relevant for P2 deliverable can be found in this folder. 
 - `Data` folder containing some csv files that contains some queried or downloaded data needed for different part of the results notebook.
 - `Visualization` folder contains the visualization made either in _html_ or in _png_
 - `Weights` folder contains saved weights of our different models such that they can be used without retraining.
+  
 - `README.md`
 - `requirements.txt` text file specifying the necessary libraries to run the results notebook. 
 - `gitignore` configuration file used to specify files and directories that should be ignored by Git.
